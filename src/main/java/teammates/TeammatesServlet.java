@@ -21,6 +21,7 @@ import teammates.exception.AccountExistsException;
 import teammates.exception.CourseDoesNotExistException;
 import teammates.exception.CourseExistsException;
 import teammates.exception.CourseInputInvalidException;
+import teammates.exception.EntityDoesNotExistException;
 import teammates.exception.EvaluationExistsException;
 import teammates.exception.GoogleIDExistsInCourseException;
 import teammates.exception.RegistrationKeyInvalidException;
@@ -244,7 +245,12 @@ public class TeammatesServlet extends HttpServlet {
 		}
 
 		else if (operation.equals(OPERATION_COORDINATOR_DELETEALLSTUDENTS)) {
-			coordinatorDeleteAllStudents();
+			try {
+				coordinatorDeleteAllStudents();
+			} catch (EntityDoesNotExistException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		else if (operation.equals(OPERATION_COORDINATOR_DELETECOURSE)) {
@@ -254,11 +260,21 @@ public class TeammatesServlet extends HttpServlet {
 		}
 
 		else if (operation.equals(OPERATION_COORDINATOR_DELETEEVALUATION)) {
-			coordinatorDeleteEvaluation();
+			try {
+				coordinatorDeleteEvaluation();
+			} catch (EntityDoesNotExistException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		else if (operation.equals(OPERATION_COORDINATOR_DELETESTUDENT)) {
-			coordinatorDeleteStudent();
+			try {
+				coordinatorDeleteStudent();
+			} catch (EntityDoesNotExistException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		else if (operation.equals(OPERATION_COORDINATOR_EDITEVALUATION)) {
@@ -441,13 +457,7 @@ public class TeammatesServlet extends HttpServlet {
 	private void administratorCleanUp() {
 		Courses courses = Courses.inst();
 		String courseID = req.getParameter(COURSE_ID);
-
-		try {
-			courses.deleteCoordinatorCourse(courseID);
-		} catch (CourseDoesNotExistException e) {
-			e.printStackTrace();
-		}
-
+		courses.deleteCoordinatorCourse(courseID);
 	}
 
 	private void administratorLoginATD() throws IOException {
@@ -553,7 +563,7 @@ public class TeammatesServlet extends HttpServlet {
 		courses.archiveCoordinatorCourse(req.getParameter(COURSE_ID));
 	}
 
-	private void coordinatorDeleteAllStudents() {
+	private void coordinatorDeleteAllStudents() throws EntityDoesNotExistException {
 		Courses courses = Courses.inst();
 		courses.deleteAllStudents(req.getParameter(COURSE_ID));
 
@@ -587,7 +597,7 @@ public class TeammatesServlet extends HttpServlet {
 		
 	}
 
-	private void coordinatorDeleteEvaluation() {
+	private void coordinatorDeleteEvaluation() throws EntityDoesNotExistException {
 		String courseID = req.getParameter(COURSE_ID);
 		String name = req.getParameter(EVALUATION_NAME);
 
@@ -595,7 +605,7 @@ public class TeammatesServlet extends HttpServlet {
 		evaluations.deleteEvaluation(courseID, name);
 	}
 
-	private void coordinatorDeleteStudent() {
+	private void coordinatorDeleteStudent() throws EntityDoesNotExistException {
 		Courses courses = Courses.inst();
 
 		courses.deleteStudent(req.getParameter(COURSE_ID), req.getParameter(STUDENT_EMAIL));

@@ -18,6 +18,7 @@ import teammates.Datastore;
 import teammates.Evaluations;
 import teammates.TeammatesServlet;
 import teammates.exception.CourseDoesNotExistException;
+import teammates.exception.EntityDoesNotExistException;
 import teammates.jdo.Course;
 import teammates.jdo.Evaluation;
 import teammates.jdo.Student;
@@ -49,7 +50,7 @@ public class DeleteCourseAPITest {
 	}
 	
 	@Test
-	public void testCoordDeleteCourseSuccessful() {
+	public void testCoordDeleteCourseSuccessful() throws EntityDoesNotExistException {
 		setupTestData();
 		
 		testCoursesDeleteCourse();
@@ -61,13 +62,9 @@ public class DeleteCourseAPITest {
 	}
 	
 	//Test deleteCoordinatorCourse(courseID) function in Courses.java
-	public void testCoursesDeleteCourse() {
+	public void testCoursesDeleteCourse() throws EntityDoesNotExistException {
 		Courses courses = Courses.inst();
-		try {
-			courses.deleteCoordinatorCourse(COURSE_ID);
-		} catch (CourseDoesNotExistException e) {
-			assertTrue(false);
-		}
+		courses.deleteCoordinatorCourse(COURSE_ID);
 	}
 
 	//Test deleteAllStudents(courseID) function in Courses.java
@@ -105,18 +102,12 @@ public class DeleteCourseAPITest {
 		response = ts.coordinatorDeleteCourse(COURSE_ID);
 		assertEquals(RESPONSE_DELETED, response);
 		
-		//course not exists
+		//course not exists, but the operation is still considered successful
 		response = ts.coordinatorDeleteCourse("unknown courseID");
-		assertEquals(RESPONSE_NOT_DELETED, response);
+		assertEquals(RESPONSE_DELETED, response);
 		
 	}
-	
-	/*---------------------------------------------------EXCEPTION TESTING---------------------------------------------------*/
-	@Test (expected = CourseDoesNotExistException.class)
-	public void testCoursesDeleteCourseNotExist() throws CourseDoesNotExistException {
-		Courses courses = Courses.inst();
-		courses.deleteCoordinatorCourse("unknown course");
-	}
+
 	
 
 	/*---------------------------------------------------HELPER FUNCTION---------------------------------------------------*/

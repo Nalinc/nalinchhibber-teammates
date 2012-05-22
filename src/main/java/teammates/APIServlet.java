@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
@@ -18,6 +19,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import teammates.exception.AccountExistsException;
 import teammates.exception.CourseDoesNotExistException;
+import teammates.exception.CourseExistsException;
+import teammates.exception.CourseInputInvalidException;
+import teammates.exception.EntityDoesNotExistException;
 import teammates.exception.TeamFormingSessionExistsException;
 import teammates.exception.TeamProfileExistsException;
 import teammates.jdo.Coordinator;
@@ -27,11 +31,15 @@ import teammates.jdo.EnrollmentReport;
 import teammates.jdo.Evaluation;
 import teammates.jdo.Student;
 import teammates.jdo.Submission;
+import teammates.jdo.TeamFormingLog;
 import teammates.jdo.TeamFormingSession;
+import teammates.jdo.TeamProfile;
+import teammates.testing.object.Team;
 
 import com.google.appengine.api.datastore.Text;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
 
 import java.util.logging.Logger;
 
@@ -49,22 +57,43 @@ import java.util.logging.Logger;
 @SuppressWarnings("serial")
 public class APIServlet extends HttpServlet {
 	public static final String OPERATION_CREATE_COORD = "OPERATION_CREATE_COORD";
+	public static final String OPERATION_DELETE_COORD = "OPERATION_DELETE_COORD";
 	public static final String OPERATION_DELETE_COORD_NON_CASCADE = "OPERATION_DELETE_COORD_NON_CASCADE";
+	public static final String OPERATION_DELETE_COURSE = "OPERATION_DELETE_COURSE";
 	public static final String OPERATION_DELETE_COURSE_BY_ID_NON_CASCADE = "OPERATION_DELETE_COURSE_BY_ID_NON_CASCADE";
-	public static final String OPERATION_GET_COORD_BY_ID = "OPERATION_GET_COORD_BY_ID";
-	public static final String OPERATION_GET_COURSES_BY_COORD="get_courses_by_coord";
-	public static final String OPERATION_SYSTEM_ACTIVATE_AUTOMATED_REMINDER="activate_auto_reminder";
-	
-	
+	public static final String OPERATION_DELETE_EVALUATION = "OPERATION_DELETE_EVALUATION";
+	public static final String OPERATION_DELETE_STUDENT = "OPERATION_DELETE_STUDENT";
+	public static final String OPERATION_DELETE_TEAM_FORMING_LOG = "OPERATION_DELETE_TEAM_FORMING_LOG";
+	public static final String OPERATION_DELETE_TEAM_PROFILE = "OPERATION_DELETE_TEAM_PROFILE";
+	public static final String OPERATION_DELETE_TFS = "OPERATION_DELETE_TFS";
+	public static final String OPERATION_GET_COORD_AS_JSON = "OPERATION_GET_COORD_AS_JSON";
+	public static final String OPERATION_GET_COURSES_BY_COORD = "get_courses_by_coord";
+	public static final String OPERATION_GET_COURSE_AS_JSON = "OPERATION_GET_COURSE_AS_JSON";
+	public static final String OPERATION_PERSIST_DATABUNDLE = "OPERATION_PERSIST_DATABUNDLE";
+	public static final String OPERATION_GET_STUDENT_AS_JSON = "OPERATION_GET_STUDENT_AS_JSON";
+	public static final String OPERATION_GET_EVALUATION_AS_JSON = "OPERATION_GET_EVALUATION_AS_JSON";
+	public static final String OPERATION_GET_SUBMISSION_AS_JSON = "OPERATION_GET_SUBMISSION_AS_JSON";
+	public static final String OPERATION_GET_TEAM_FORMING_LOG_AS_JSON = "OPERATION_GET_TEAM_FORMING_LOG_AS_JSON";
+	public static final String OPERATION_GET_TEAM_PROFILE_AS_JSON = "OPERATION_GET_TEAM_PROFILE_AS_JSON";
+	public static final String OPERATION_GET_TFS_AS_JSON = "OPERATION_GET_TFS_AS_JSON";
+	public static final String OPERATION_SYSTEM_ACTIVATE_AUTOMATED_REMINDER = "activate_auto_reminder";
+
 	public static final String PARAMETER_COURSE_ID = "PARAMETER_COURSE_ID";
 	public static final String PARAMETER_COORD_EMAIL = "PARAMETER_COORD_EMAIL";
 	public static final String PARAMETER_COORD_ID = "PARAMETER_COORD_ID";
 	public static final String PARAMETER_COORD_NAME = "PARAMETER_COORD_NAME";
-	
+	public static final String PARAMETER_DATABUNDLE_JSON = "PARAMETER_DATABUNDLE_JSON";
+	public static final String PARAMETER_EVALUATION_NAME = "PARAMETER_EVALUATION_NAME";
+	public static final String PARAMETER_STUDENT_EMAIL = "PARAMETER_STUDENT_EMAIL";
+	public static final String PARAMETER_REVIEWER_EMAIL = "PARAMETER_REVIEWER_EMAIL";
+	public static final String PARAMETER_REVIEWEE_EMAIL = "PARAMETER_REVIEWEE_EMAIL";
+	public static final String PARAMETER_STUDENT_ID = "PARAMETER_STUDENT_ID";
+	public static final String PARAMETER_TEAM_NAME = "PARAMETER_TEAM_NAME";
+
 	private HttpServletRequest req;
 	private HttpServletResponse resp;
-	private static final Logger log = Logger.getLogger(APIServlet.class.getName());
-	
+	private static final Logger log = Logger.getLogger(APIServlet.class
+			.getName());
 	
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -94,74 +123,147 @@ public class APIServlet extends HttpServlet {
 		}
 
 		String action = req.getParameter("action");
-        log.info(action);
-        if (action.equals("evaluation_open")) {
-                evaluationOpen();
-        } else if(action.equals("teamformingsession_open")) {
-                teamFormingSessionOpen();
-        } else if (action.equals("evaluation_close")) {
-                evaluationClose();
-        } else if (action.equals("evaluation_add")) {
-                evaluationAdd();
-        } else if (action.equals("evaluation_publish")) {
-                evaluationPublish();
-        } else if (action.equals("evaluation_unpublish")) {
-                evaluationUnpublish();
-        } else if (action.equals("teamformingsession_add")) {
-                teamFormingSessionAdd();
-        } else if (action.equals("createteamprofiles")) {
-                createProfileOfExistingTeams();
-        } else if (action.equals("course_add")) {
-                courseAdd();
-        } else if (action.equals("cleanup")) {
-                totalCleanup();
-        } else if (action.equals("cleanup_course")) {
-                cleanupCourse();
-        } else if (action.equals("cleanup_by_coordinator")) {
-                totalCleanupByCoordinator();
-        } else if (action.equals("enroll_students")) {
-                enrollStudents();
-        } else if (action.equals("student_submit_feedbacks")) {
-                studentSubmitFeedbacks();
-        } else if (action.equals("student_submit_dynamic_feedbacks")) {
-                studentSubmitDynamicFeedbacks();
-        } else if (action.equals("students_join_course")) {
-                studentsJoinCourse();
-        } else if (action.equals("email_stress_testing")) {
-                emailStressTesting();
-        } else if (action.equals("enable_email")) {
-                enableEmail();
-        } else if (action.equals("disable_email")) {
-                disableEmail();
-        }  else if (action.equals(OPERATION_SYSTEM_ACTIVATE_AUTOMATED_REMINDER)){
-                activateAutomatedReminder();
-        } else if (action.equals(OPERATION_GET_COURSES_BY_COORD)){
-    		String coordID = req.getParameter(PARAMETER_COORD_ID);
-    		String courseIDs = getCoursesByCoordID(coordID);
-    		resp.getWriter().write(courseIDs);
-        } else if (action.equals(OPERATION_DELETE_COURSE_BY_ID_NON_CASCADE)){
-    		String courseID = req.getParameter(PARAMETER_COURSE_ID);
-    		deleteCourseByIdNonCascade(courseID);
-        }else if (action.equals(OPERATION_GET_COORD_BY_ID)){
-    		String coordID = req.getParameter(PARAMETER_COORD_ID);
-    		String coordJsonString = getCoordByID(coordID);
-    		resp.getWriter().write(coordJsonString);
-        }else if (action.equals(OPERATION_CREATE_COORD)){
-        	String coordID = req.getParameter(PARAMETER_COORD_ID);
-        	String coordName = req.getParameter(PARAMETER_COORD_NAME);
-    		String coordEmail = req.getParameter(PARAMETER_COORD_EMAIL);
-    		createCoord(coordID, coordName, coordEmail);
-        }else if (action.equals(OPERATION_DELETE_COORD_NON_CASCADE)){
-    		String coordId = req.getParameter(PARAMETER_COORD_ID);
-    		deleteCoordByIdNonCascade(coordId);
-        } else {
-                System.err.println("Unknown command: " + action);
-        }
+		log.info(action);
+		// TODO: reorder in alphabetical order
+		if (action.equals("evaluation_open")) {
+			evaluationOpen();
+		} else if (action.equals("teamformingsession_open")) {
+			teamFormingSessionOpen();
+		} else if (action.equals("evaluation_close")) {
+			evaluationClose();
+		} else if (action.equals("evaluation_add")) {
+			evaluationAdd();
+		} else if (action.equals("evaluation_publish")) {
+			evaluationPublish();
+		} else if (action.equals("evaluation_unpublish")) {
+			evaluationUnpublish();
+		} else if (action.equals("teamformingsession_add")) {
+			teamFormingSessionAdd();
+		} else if (action.equals("createteamprofiles")) {
+			createProfileOfExistingTeams();
+		} else if (action.equals("course_add")) {
+			courseAdd();
+		} else if (action.equals("cleanup")) {
+			totalCleanup();
+		} else if (action.equals("cleanup_course")) {
+			try {
+				cleanupCourse();
+			} catch (EntityDoesNotExistException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else if (action.equals("cleanup_by_coordinator")) {
+			totalCleanupByCoordinator();
+		} else if (action.equals("enroll_students")) {
+			enrollStudents();
+		} else if (action.equals("student_submit_feedbacks")) {
+			studentSubmitFeedbacks();
+		} else if (action.equals("student_submit_dynamic_feedbacks")) {
+			studentSubmitDynamicFeedbacks();
+		} else if (action.equals("students_join_course")) {
+			studentsJoinCourse();
+		} else if (action.equals("email_stress_testing")) {
+			emailStressTesting();
+		} else if (action.equals("enable_email")) {
+			enableEmail();
+		} else if (action.equals("disable_email")) {
+			disableEmail();
+		} else if (action.equals(OPERATION_SYSTEM_ACTIVATE_AUTOMATED_REMINDER)) {
+			activateAutomatedReminder();
+		}else {
+			String returnValue;
+			try {
+				returnValue = executeBackendAction(req, action);
+			} catch (Exception e) {
+				returnValue = Common.BACKEND_STATUS_FAILURE+e.getMessage();
+			}
+			resp.getWriter().write(returnValue);
+		}
 
 		resp.flushBuffer();
 	}
 
+	private String executeBackendAction(HttpServletRequest req, String action) throws Exception {
+		if (action.equals(OPERATION_CREATE_COORD)) {
+			String coordID = req.getParameter(PARAMETER_COORD_ID);
+			String coordName = req.getParameter(PARAMETER_COORD_NAME);
+			String coordEmail = req.getParameter(PARAMETER_COORD_EMAIL);
+			createCoordIfNew(coordID, coordName, coordEmail);
+		} else if (action.equals(OPERATION_DELETE_COORD)) {
+			String coordID = req.getParameter(PARAMETER_COORD_ID);
+			deleteCoord(coordID);
+		} else if (action.equals(OPERATION_DELETE_COORD_NON_CASCADE)) {
+			String coordId = req.getParameter(PARAMETER_COORD_ID);
+			deleteCoordByIdNonCascade(coordId);
+		} else if (action.equals(OPERATION_DELETE_COURSE)) {
+			String courseId = req.getParameter(PARAMETER_COURSE_ID);
+			deleteCourse(courseId);
+		} else if (action.equals(OPERATION_DELETE_COURSE_BY_ID_NON_CASCADE)) {
+			String courseID = req.getParameter(PARAMETER_COURSE_ID);
+			deleteCourseByIdNonCascade(courseID);
+		}  else if (action.equals(OPERATION_DELETE_EVALUATION)) {
+			String courseId = req.getParameter(PARAMETER_COURSE_ID);
+			String evaluationName = req.getParameter(PARAMETER_EVALUATION_NAME);
+			deleteEvaluation(courseId, evaluationName);
+		}else if (action.equals(OPERATION_DELETE_STUDENT)) {
+			String courseId = req.getParameter(PARAMETER_COURSE_ID);
+			String email = req.getParameter(PARAMETER_STUDENT_EMAIL);
+			deleteStudent(courseId, email);
+		} else if (action.equals(OPERATION_DELETE_TEAM_FORMING_LOG)) {
+			String courseId = req.getParameter(PARAMETER_COURSE_ID);
+			deleteTeamFormingLog(courseId);
+		}else if (action.equals(OPERATION_DELETE_TEAM_PROFILE)) {
+			String courseId = req.getParameter(PARAMETER_COURSE_ID);
+			String teamName = req.getParameter(PARAMETER_TEAM_NAME);
+			deleteTeamProfile(courseId, teamName);
+		}else if (action.equals(OPERATION_DELETE_TFS)) {
+			String courseId = req.getParameter(PARAMETER_COURSE_ID);
+			deleteTfs(courseId);
+		} else if (action.equals(OPERATION_GET_COORD_AS_JSON)) {
+			String coordID = req.getParameter(PARAMETER_COORD_ID);
+			return getCoordAsJson(coordID);
+		} else if (action.equals(OPERATION_GET_COURSE_AS_JSON)) {
+			String courseId = req.getParameter(PARAMETER_COURSE_ID);
+			return getCourseAsJason(courseId);
+		} else if (action.equals(OPERATION_GET_COURSES_BY_COORD)) {
+			String coordID = req.getParameter(PARAMETER_COORD_ID);
+			return getCoursesByCoordID(coordID);
+		} else if (action.equals(OPERATION_GET_STUDENT_AS_JSON)) {
+			String courseId = req.getParameter(PARAMETER_COURSE_ID);
+			String email = req.getParameter(PARAMETER_STUDENT_EMAIL);
+			return getStudentAsJason(courseId, email);
+		} else if (action.equals(OPERATION_GET_EVALUATION_AS_JSON)) {
+			String courseId = req.getParameter(PARAMETER_COURSE_ID);
+			String evaluationName = req.getParameter(PARAMETER_EVALUATION_NAME);
+			return getEvaluationAsJason(courseId,
+					evaluationName);
+		} else if (action.equals(OPERATION_GET_TFS_AS_JSON)) {
+			String courseId = req.getParameter(PARAMETER_COURSE_ID);
+			return getTfsAsJason(courseId);
+		} else if (action.equals(OPERATION_GET_TEAM_FORMING_LOG_AS_JSON)) {
+			String courseId = req.getParameter(PARAMETER_COURSE_ID);
+			return getTeamFormingLogAsJason(courseId);
+		} else if (action.equals(OPERATION_GET_TEAM_PROFILE_AS_JSON)) {
+			String courseId = req.getParameter(PARAMETER_COURSE_ID);
+			String teamName = req.getParameter(PARAMETER_TEAM_NAME);
+			return getTeamProfileAsJason(courseId,
+					teamName);
+		} else if (action.equals(OPERATION_GET_SUBMISSION_AS_JSON)) {
+			String courseId = req.getParameter(PARAMETER_COURSE_ID);
+			String evaluationName = req.getParameter(PARAMETER_EVALUATION_NAME);
+			String reviewerId = req.getParameter(PARAMETER_REVIEWER_EMAIL);
+			String revieweeId = req.getParameter(PARAMETER_REVIEWEE_EMAIL);
+			return getSubmissionAsJason(courseId, evaluationName, reviewerId, revieweeId);
+		} else if (action.equals(OPERATION_PERSIST_DATABUNDLE)) {
+			String dataBundleJsonString = req.getParameter(PARAMETER_DATABUNDLE_JSON);
+			persistNewDataBundle(dataBundleJsonString);
+		}  else {
+			throw new Exception("Unknown command: " + action);
+		}
+		return Common.BACKEND_STATUS_SUCCESS;
+	}
 
+	
 	/**
 	 * 
 	 * @author wangsha
@@ -170,7 +272,6 @@ public class APIServlet extends HttpServlet {
 	private void disableEmail() throws IOException {
 		Config.inst().emailEnabled = false;
 		resp.getWriter().write("ok");
-
 	}
 
 	/**
@@ -315,7 +416,8 @@ public class APIServlet extends HttpServlet {
 			}
 		}
 		// Add and edit Student objects in the datastore
-		boolean edited = enrollmentReportList.addAll(courses.enrolStudents(studentList, courseId));
+		boolean edited = enrollmentReportList.addAll(courses.enrolStudents(
+				studentList, courseId));
 
 		if (edited) {
 			resp.getWriter().write("ok");
@@ -364,67 +466,61 @@ public class APIServlet extends HttpServlet {
 	 * @author wangsha
 	 * @date Sep 8, 2011
 	 */
-	//TODO: this method does not do a 'total cleanup'
+	// TODO: this method does not do a 'total cleanup'
 	protected void totalCleanupByCoordinator() {
 		String coordID = req.getParameter("coordinator_id");
-		try {
-			Courses.inst().deleteCoordinatorCourses(coordID);
-		} catch (CourseDoesNotExistException e) {
-			e.printStackTrace();
-		}
+		Courses.inst().deleteCoordinatorCourses(coordID);
 
 	}
 
 	/**
 	 * Clean up everything about a particular course
+	 * @throws EntityDoesNotExistException 
 	 */
-	protected void cleanupCourse() {
-		
+	protected void cleanupCourse() throws EntityDoesNotExistException {
+
 		String courseID = req.getParameter("course_id");
 		System.out.println("APIServlet.cleanupCourse() courseID = " + courseID);
 		cascadeCleanupCourse(courseID);
 	}
 
 	/**
-	 * Deletes a course and all data associated with it: students, evaluations, 
-	 *    team profiles, team-forming sessions
+	 * Deletes a course and all data associated with it: students, evaluations,
+	 * team profiles, team-forming sessions
+	 * 
 	 * @param courseID
+	 * @throws EntityDoesNotExistException 
 	 */
-	private void cascadeCleanupCourse(String courseID) {
-		
-			try {
-				Courses.inst().cleanUpCourse(courseID);
-			} catch (CourseDoesNotExistException e) {
-				System.out.println("Course "+courseID+" could not be deleted because " +
-						"it does not exist");
-				return;
-			}
-			Evaluations.inst().deleteEvaluations(courseID);
-			TeamForming teamForming = TeamForming.inst();
-            if (teamForming.getTeamFormingSession(courseID, null) != null)
-            	teamForming.deleteTeamFormingSession(courseID);
-            if(teamForming.getTeamFormingLogList(courseID)!=null)
-            	teamForming.deleteTeamFormingLog(courseID);
-		
+	private void cascadeCleanupCourse(String courseID) throws EntityDoesNotExistException {
+
+		try {
+			Courses.inst().cleanUpCourse(courseID);
+		} catch (CourseDoesNotExistException e) {
+			System.out.println("Course " + courseID
+					+ " could not be deleted because " + "it does not exist");
+			return;
+		}
+		Evaluations.inst().deleteEvaluations(courseID);
+		TeamForming teamForming = TeamForming.inst();
+		if (teamForming.getTeamFormingSession(courseID, null) != null)
+			teamForming.deleteTeamFormingSession(courseID);
+		if (teamForming.getTeamFormingLogList(courseID) != null)
+			teamForming.deleteTeamFormingLog(courseID);
+
 	}
 
 	protected void courseAdd() throws IOException {
 		log.info("APIServlet adding new course: ");
-		// String courseID = req.getParameter("course_id");
-		// String courseName = req.getParameter("course_name");
 		String googleID = req.getParameter("google_id");
 		String courseJson = req.getParameter("course");
-		
-		
+
 		Gson gson = new Gson();
 		Course c = gson.fromJson(courseJson, Course.class);
 		c.setCoordinatorID(googleID);
-
 		getPM().makePersistent(c);
-		
-		log.info("Course added: coord: "+ c.getCoordinatorID()
-				+ " course id: "+c.getID()
-				+ " course name: "+c.getName());
+
+		log.info("Course added: coord: " + c.getCoordinatorID()
+				+ " course id: " + c.getID() + " course name: " + c.getName());
 
 		resp.getWriter().write("ok");
 	}
@@ -525,52 +621,56 @@ public class APIServlet extends HttpServlet {
 		resp.getWriter().write("ok");
 
 	}
+
 	protected void teamFormingSessionAdd() throws IOException {
-        String json = req.getParameter("teamformingsession");
+		String json = req.getParameter("teamformingsession");
 
-        Gson gson = new Gson();
-        TeamFormingSession e = gson.fromJson(json, TeamFormingSession.class);
+		Gson gson = new Gson();
+		TeamFormingSession e = gson.fromJson(json, TeamFormingSession.class);
 
-        try{
-                TeamForming teamForming = TeamForming.inst();
-                teamForming.createTeamFormingSession(e.getCourseID(), e.getStart(), 
-                                e.getDeadline(), e.getTimeZone(), e.getGracePeriod(), e.getInstructions(), e.getProfileTemplate());
-                resp.getWriter().write("ok");
-        }
-        catch (TeamFormingSessionExistsException ex){
-                resp.getWriter().write("fail");
-        }                
+		try {
+			TeamForming teamForming = TeamForming.inst();
+			teamForming.createTeamFormingSession(e.getCourseID(), e.getStart(),
+					e.getDeadline(), e.getTimeZone(), e.getGracePeriod(),
+					e.getInstructions(), e.getProfileTemplate());
+			resp.getWriter().write("ok");
+		} catch (TeamFormingSessionExistsException ex) {
+			resp.getWriter().write("fail");
+		}
 	}
+
 	protected void teamFormingSessionOpen() throws IOException {
-        System.out.println("Opening team forming session.");
-        String courseID = req.getParameter("course_id");
+		System.out.println("Opening team forming session.");
+		String courseID = req.getParameter("course_id");
 
-        boolean edited = TeamForming.inst().openTeamFormingSession(courseID);
+		boolean edited = TeamForming.inst().openTeamFormingSession(courseID);
 
-        if (edited) {
-                resp.getWriter().write("ok");
-        } else {
-                resp.getWriter().write("fail");
-        }
+		if (edited) {
+			resp.getWriter().write("ok");
+		} else {
+			resp.getWriter().write("fail");
+		}
 	}
+
 	protected void createProfileOfExistingTeams() throws IOException {
-        System.out.println("Creating profiles of existing teams.");
-        String courseId = req.getParameter("course_id");
-        String courseName = req.getParameter("course_name");
-        String teamName = req.getParameter("team_name");
-        Text teamProfile = new Text(req.getParameter("team_profile"));
-        
-        // Add the team forming session                
-        TeamForming teamForming = TeamForming.inst();
-        
-        try{
-                teamForming.createTeamProfile(courseId, courseName, teamName, teamProfile);
-                resp.getWriter().write("ok");
-        }
-        
-        catch (TeamProfileExistsException e){
-                resp.getWriter().write("fail");
-        }
+		System.out.println("Creating profiles of existing teams.");
+		String courseId = req.getParameter("course_id");
+		String courseName = req.getParameter("course_name");
+		String teamName = req.getParameter("team_name");
+		Text teamProfile = new Text(req.getParameter("team_profile"));
+
+		// Add the team forming session
+		TeamForming teamForming = TeamForming.inst();
+
+		try {
+			teamForming.createTeamProfile(courseId, courseName, teamName,
+					teamProfile);
+			resp.getWriter().write("ok");
+		}
+
+		catch (TeamProfileExistsException e) {
+			resp.getWriter().write("fail");
+		}
 	}
 
 	protected void studentsJoinCourse() throws IOException {
@@ -620,68 +720,295 @@ public class APIServlet extends HttpServlet {
 		resp.getWriter().write("ok");
 
 	}
-	
+
 	/**
 	 * request to automatedReminders servlet
+	 * 
 	 * @throws IOException
 	 * @throws ServletException
 	 */
-	protected void activateAutomatedReminder() throws IOException,ServletException{
-	        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/automatedreminders");
-	        dispatcher.forward(this.req, this.resp);
-		}
-	
-
+	protected void activateAutomatedReminder() throws IOException,
+			ServletException {
+		RequestDispatcher dispatcher = getServletContext()
+				.getRequestDispatcher("/automatedreminders");
+		dispatcher.forward(this.req, this.resp);
+	}
 
 	private String getCoursesByCoordID(String coordID) {
-		String query = "select from " + Course.class.getName() + " where coordinatorID == '" + coordID + "'";
+		String query = "select from " + Course.class.getName()
+				+ " where coordinatorID == '" + coordID + "'";
 
 		@SuppressWarnings("unchecked")
-		List<Course> courseList = (List<Course>) getPM().newQuery(query).execute();
+		List<Course> courseList = (List<Course>) getPM().newQuery(query)
+				.execute();
 		String courseIDs = "";
-		
+
 		for (Course c : courseList) {
-			courseIDs = courseIDs + c.getID()+" ";
+			courseIDs = courseIDs + c.getID() + " ";
 		}
 		return courseIDs.trim();
 	}
-	
+
 	private void deleteCourseByIdNonCascade(String courseID) {
 		Courses courses = Courses.inst();
-		try {
-			courses.deleteCoordinatorCourse(courseID);
-		} catch (CourseDoesNotExistException e) {
-			log.warning("Trying to delete non-existent course "+courseID);
-		}
+		courses.deleteCoordinatorCourse(courseID);
 	}
-	
-	private String getCoordByID(String coordID) {
-		Accounts accounts = Accounts.inst();
-		Coordinator coord = accounts.getCoordinator(coordID);
-		if(coord==null){
-			log.warning("Trying to get non-existent coord "+coordID);
-		}
-		return (new Gson()).toJson(coord);
-	}
-	
-	private void createCoord(String coordID, String coordName, String coordEmail) {
-		Accounts accounts = Accounts.inst();
 
-		try {
-			accounts.addCoordinator(coordID, coordName, coordEmail);
-		}catch (AccountExistsException e) {
-			log.warning("Trying to create a coordinator that already exists: "+coordID);
-		}
-		
-	}
-	
 	private void deleteCoordByIdNonCascade(String coordId) {
 		Accounts accounts = Accounts.inst();
 		try {
 			accounts.deleteCoordinatorNonCascade(coordId);
 		} catch (Exception e) {
-			log.warning("problem while trying to delete coordinator"+coordId+"\n error:"+ e.getMessage());
+			log.warning("problem while trying to delete coordinator" + coordId
+					+ "\n error:" + e.getMessage());
 		}
-		
 	}
+
+	// --------------------- revised API ------------------------------------
+
+	private String getCoordAsJson(String coordID) {
+		Accounts accounts = Accounts.inst();
+		Coordinator coord = accounts.getCoordinator(coordID);
+		if (coord == null) {
+			log.warning("Trying to get non-existent Coord : " + coordID);
+		}
+		return Common.getTeammatesGson().toJson(coord);
+	}
+
+	private String getCourseAsJason(String courseId) {
+		Course course = Courses.inst().getCourse(courseId);
+		if (course == null) {
+			log.warning("Trying to get non-existent Course : " + courseId);
+		}
+		return Common.getTeammatesGson().toJson(course);
+	}
+
+	private String getStudentAsJason(String courseId, String email) {
+		Student student = Accounts.inst().getStudent(courseId, email);
+		if (student == null) {
+			log.warning("Trying to get non-existent Student : " + courseId
+					+ "/" + email);
+		}
+		return Common.getTeammatesGson().toJson(student);
+	}
+
+	private String getEvaluationAsJason(String courseId, String evaluationName) {
+		Evaluation evaluation = Evaluations.inst().getEvaluation(courseId,
+				evaluationName);
+		if (evaluation == null) {
+			log.warning("Trying to get non-existent Evaluation : " + courseId
+					+ "/" + evaluationName);
+		}
+		return Common.getTeammatesGson().toJson(evaluation);
+	}
+
+	private String getSubmissionAsJason(String courseId, String evaluationName,
+			String reviewerEmail, String revieweeEmail) {
+		List<Submission> allSubmissionsFromReviewer = Evaluations.inst()
+				.getSubmissionFromStudentList(courseId, evaluationName,
+						reviewerEmail);
+		Submission target = null;
+		for (Submission submission : allSubmissionsFromReviewer) {
+			if (submission.getToStudent().equals(revieweeEmail)) {
+				target = submission;
+				break;
+			}
+		}
+		if (target == null) {
+			log.warning("Trying to get non-existent Submission : " + courseId
+					+ "/" + evaluationName + "/" + reviewerEmail + "/"
+					+ revieweeEmail);
+		}
+		return Common.getTeammatesGson().toJson(target);
+	}
+
+	private String getTfsAsJason(String courseId) {
+		TeamFormingSession tfs = TeamForming.inst().getTeamFormingSession(
+				courseId);
+		if (tfs == null) {
+			log.warning("Trying to get non-existent TeamFormingSession : "
+					+ courseId);
+		}
+		return Common.getTeammatesGson().toJson(tfs);
+	}
+
+	private String getTeamProfileAsJason(String courseId, String teamName) {
+		TeamProfile teamProfile = TeamForming.inst().getTeamProfile(courseId,
+				teamName);
+		if (teamProfile == null) {
+			log.warning("Trying to get non-existent TeamProfile : " + courseId
+					+ "/" + teamName);
+		}
+		return Common.getTeammatesGson().toJson(teamProfile);
+	}
+
+	private String getTeamFormingLogAsJason(String courseId) {
+		List<TeamFormingLog> teamFormingLogList = TeamForming.inst()
+				.getTeamFormingLogList(courseId);
+		if (teamFormingLogList == null) {
+			log.warning("Trying to get non-existent TeamFormingLog : "
+					+ courseId);
+		}
+		return Common.getTeammatesGson().toJson(teamFormingLogList);
+	}
+
+	/**
+	 * Persists given data in the datastore Works ONLY if the data is correct
+	 * and new (i.e. these entities do not already exist in the datastore). The
+	 * behavior is undefined if incorrect or not new.
+	 * 
+	 * @param dataBundleJsonString
+	 * @return status of the request in the form 'status meassage'+'additional
+	 *         info (if any)' e.g., "[BACKEND_STATUS_SUCCESS]" e.g.,
+	 *         "[BACKEND_STATUS_FAILURE]NullPointerException at ..."
+	 * @throws CourseInputInvalidException
+	 */
+	private String persistNewDataBundle(String dataBundleJsonString)
+			throws Exception {
+		Gson gson = Common.getTeammatesGson();
+
+		DataBundle data = gson.fromJson(dataBundleJsonString, DataBundle.class);
+		HashMap<String, Coordinator> coords = data.coords;
+		for (Coordinator coord : coords.values()) {
+			log.info("API Servlet adding coord :" + coord.getGoogleID());
+			createCoordIfNew(coord.getGoogleID(), coord.getName(),
+					coord.getEmail());
+		}
+
+		HashMap<String, Course> courses = data.courses;
+		for (Course course : courses.values()) {
+			log.info("API Servlet adding course :" + course.getID());
+			createCourseIfNew(course.getCoordinatorID(), course.getID(),
+					course.getName());
+		}
+
+		HashMap<String, Student> students = data.students;
+		for (Student student : students.values()) {
+			log.info("API Servlet adding student :" + student.getEmail()
+					+ " to course " + student.getCourseID());
+			createStudentIfNew(student);
+		}
+
+		HashMap<String, Evaluation> evaluations = data.evaluations;
+		for (Evaluation evaluation : evaluations.values()) {
+			log.info("API Servlet adding evaluation :" + evaluation.getName()
+					+ " to course " + evaluation.getCourseID());
+			createEvalutionIfNew(evaluation);
+		}
+
+		// processing is slightly different for submissions because we are
+		// adding all submissions in one go
+		HashMap<String, Submission> submissionsMap = data.submissions;
+		List<Submission> submissionsList = new ArrayList<Submission>();
+		for (Submission submission : submissionsMap.values()) {
+			log.info("API Servlet adding submission for "
+					+ submission.getEvaluationName() + " from "
+					+ submission.getFromStudent() + " to "
+					+ submission.getToStudent());
+			submissionsList.add(submission);
+		}
+		createSubmissions(submissionsList);
+		log.info("API Servlet added " + submissionsList.size() + " submissions");
+
+		HashMap<String, TeamFormingSession> tfsMap = data.teamFormingSessions;
+		for (TeamFormingSession tfs : tfsMap.values()) {
+			log.info("API Servlet adding TeamFormingSession to course "
+					+ tfs.getCourseID());
+			createTfsIfNew(tfs);
+		}
+
+		HashMap<String, TeamProfile> teamProfiles = data.teamProfiles;
+		for (TeamProfile teamProfile : teamProfiles.values()) {
+			log.info("API Servlet adding TeamProfile of "
+					+ teamProfile.getTeamName() + " in course "
+					+ teamProfile.getCourseID());
+			createTeamProfileIfNew(teamProfile);
+		}
+
+		HashMap<String, TeamFormingLog> teamFormingLogs = data.teamFormingLogs;
+		for (TeamFormingLog teamFormingLog : teamFormingLogs.values()) {
+			log.info("API Servlet adding TeamFormingLog in course "
+					+ teamFormingLog.getCourseID() + " : "
+					+ teamFormingLog.getMessage().getValue());
+			createTeamFormingLogEntry(teamFormingLog);
+		}
+
+		return Common.BACKEND_STATUS_SUCCESS;
+	}
+
+	private void createCoordIfNew(String coordID, String coordName,
+			String coordEmail) throws AccountExistsException {
+		Accounts.inst().addCoordinator(coordID, coordName, coordEmail);
+	}
+
+	private void createCourseIfNew(String coordinatorId, String courseId,
+			String courseName) throws CourseInputInvalidException,
+			CourseExistsException {
+		Courses.inst().addCourse(courseId, courseName, coordinatorId);
+	}
+
+	private void createStudentIfNew(Student student) {
+		Accounts.inst().createStudent(student);
+	}
+
+	private void createEvalutionIfNew(Evaluation evaluation) {
+		Evaluations.inst().addEvaluation(evaluation);
+	}
+
+	private void createSubmissions(List<Submission> submissionsList) {
+		Evaluations.inst().editSubmissions(submissionsList);
+	}
+
+	private void createTfsIfNew(TeamFormingSession tfs)
+			throws TeamFormingSessionExistsException {
+		TeamForming.inst().createTeamFormingSession(tfs);
+	}
+
+	private void createTeamFormingLogEntry(TeamFormingLog teamFormingLog) {
+		TeamForming.inst().createTeamFormingLogEntry(teamFormingLog);
+	}
+
+	private void createTeamProfileIfNew(TeamProfile teamProfile)
+			throws TeamProfileExistsException {
+		TeamForming.inst().createTeamProfile(teamProfile);
+	}
+
+	private void deleteTeamProfile(String courseId, String teamName) throws EntityDoesNotExistException {
+		TeamForming.inst().deleteTeamProfile(courseId, teamName);
+	}
+	
+	private void deleteTeamFormingLog(String courseId) {
+		TeamForming.inst().deleteTeamFormingLog(courseId);
+	}
+
+	private void deleteTfs(String courseId) throws EntityDoesNotExistException {
+		TeamForming.inst().deleteTeamFormingSession(courseId);
+	}
+	
+	private void deleteEvaluation(String courseId, String evaluationName) throws EntityDoesNotExistException {
+		Evaluations.inst().deleteEvaluation(courseId, evaluationName);
+	}
+	
+	private void deleteStudent(String courseId, String email) throws EntityDoesNotExistException {
+		Courses.inst().deleteStudent(courseId, email);
+	}
+	
+	private void deleteCourse(String courseId) throws EntityDoesNotExistException {
+		log.info("Deleting course : "+courseId);
+		Evaluations.inst().deleteEvaluations(courseId);
+		if(TeamForming.inst().getTeamFormingSession(courseId)!=null){
+			TeamForming.inst().deleteTeamFormingSession(courseId);
+		}
+		Courses.inst().deleteCourse(courseId);
+	}
+	
+	private void deleteCoord(String coordId) throws EntityDoesNotExistException {
+		List<Course> coordCourseList = Courses.inst().getCoordinatorCourseList(coordId);
+		for(Course course: coordCourseList){
+			deleteCourse(course.getID());
+		}
+		Accounts.inst().deleteCoord(coordId);
+	}
+	
 }
+

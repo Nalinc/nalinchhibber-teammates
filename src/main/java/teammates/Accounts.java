@@ -4,8 +4,11 @@ import java.util.List;
 
 import javax.jdo.PersistenceManager;
 
+import org.mortbay.log.Log;
+
 import teammates.exception.AccountExistsException;
 import teammates.exception.CourseDoesNotExistException;
+import teammates.exception.EntityDoesNotExistException;
 import teammates.jdo.Account;
 import teammates.jdo.Coordinator;
 import teammates.jdo.Course;
@@ -111,6 +114,21 @@ public class Accounts {
 		}
 
 		return coordinatorList.get(0);
+	}
+	
+	public Student getStudent(String courseId, String email) {
+		String query = "select from " + Student.class.getName()
+				+ " where (email == '" + email + "')"
+				+ " && (courseID == '" + courseId + "')";
+
+		@SuppressWarnings("unchecked")
+		List<Student> studentList = (List<Student>) getPM()
+				.newQuery(query).execute();
+
+		if (studentList.isEmpty()) {
+			return null;
+		}
+		return studentList.get(0);
 	}
 
 	/**
@@ -227,13 +245,24 @@ public class Accounts {
 		return false;
 	}
 	
+	@Deprecated
 	public void deleteCoordinatorNonCascade(String coordId) throws Exception {
+		deleteCoord(coordId);
+	}
+
+	//TODO: check for existing student and throw exception
+	//TODO: move to Courses
+	public void createStudent(Student student) {
+		getPM().makePersistent(student);
+	}
+
+	public void deleteCoord(String coordId){
 		Coordinator coord = getCoordinator(coordId);
-		
-		if(coord == null) {
-			throw new Exception("Trying to delete non-existent coordinataor: "+coordId);
+		if (coord == null) {
+			String errorMessage = "Trying to delete non-existent coordinataor: "
+					+ coordId;
+			Log.warn(errorMessage);
 		}
-		
 		getPM().deletePersistent(coord);
 	}
 
