@@ -20,12 +20,13 @@ public class Course {
 	@SerializedName("id")
 	private String ID;
 
+	//TODO: remove SerivalizedName annotation. It is for Json only
 	@Persistent
 	@SerializedName("name")
 	private String name;
 
 	@Persistent
-	private transient String coordinatorID;
+	private String coordinatorID;
 
 	@Persistent
 	private transient boolean archived;
@@ -75,4 +76,5 @@ public class Course {
 	public boolean isArchived() {
 		return archived;
 	}
+
 }
