@@ -4,11 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 
@@ -32,15 +32,14 @@ import teammates.jdo.TeamFormingLog;
 import teammates.jdo.TeamFormingSession;
 import teammates.jdo.TeamProfile;
 import teammates.testing.lib.SharedLib;
-import teammates.testing.lib.TMAPI;
 
-import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appengine.api.datastore.Text;
+import com.google.appengine.tools.development.testing.*;
 import com.google.gson.Gson;
 
 public class APIServletTest extends BaseTestCase {
 	private final static LocalServiceTestHelper helper = new LocalServiceTestHelper(
-			new LocalDatastoreServiceTestConfig());
+			new LocalDatastoreServiceTestConfig(), new LocalMailServiceTestConfig(), new LocalTaskQueueTestConfig());
 	private final static APIServlet apiServlet = new APIServlet();
 	private static String TEST_DATA_FOLDER = "src/test/resources/data/";
 	private static Gson gson = Common.getTeammatesGson();
@@ -196,9 +195,126 @@ public class APIServletTest extends BaseTestCase {
 		
 		//TODO: more testing
 	}
-
+	
+	@Test
+	public void testEditEvaluation() throws Exception{
+		printTestCaseHeader(getNameOfThisMethod());
+		refreshDataInDatastore();
+		
+		Evaluation eval1 = dataBundle.evaluations.get("evaluation1InCourse1OfCoord1");
+		eval1.setGracePeriod(eval1.getGracePeriod()+1);
+		eval1.setInstructions(eval1.getInstructions()+"x");
+		eval1.setCommentsEnabled(!eval1.isCommentsEnabled());
+		eval1.setStart(getDateOffsetToCurrentTime(1));
+		eval1.setDeadline(getDateOffsetToCurrentTime(2));
+		apiServlet.editEvaluation(eval1);
+		verifyPresentInDatastore(eval1);
+		
+		//TODO: more testing
+		
+	}
+	
+	@Test
+	public void testPublishEvaluation() throws Exception{
+		
+		//TODO: untested. need to figure out how to work task ques in unit testing mode
+		
+//		printTestCaseHeader(getNameOfThisMethod());
+//		refreshDataInDatastore();
+//		Evaluation eval1 = dataBundle.evaluations.get("evaluation1InCourse1OfCoord1");
+//		assertEquals(false, apiServlet.getEvaluation(eval1.getCourseID(), eval1.getName()).isPublished());
+//		apiServlet.publishEvaluation(eval1.getCourseID(), eval1.getName());
+//		assertEquals(true, apiServlet.getEvaluation(eval1.getCourseID(), eval1.getName()).isPublished());
+		
+		
+	}
+	
+	@Test
+	public void testEditSubmission() throws Exception{
+		printTestCaseHeader(getNameOfThisMethod());
+		refreshDataInDatastore();
+		
+		ArrayList<Submission> submissionContainer = new ArrayList<Submission>();
+		
+		//try without empty list. Nothing should happen
+		apiServlet.editSubmission(submissionContainer);
+		
+		Submission sub1 = dataBundle.submissions
+				.get("submissionFromS1C1ToS2C1");
+		
+		Submission sub2 = dataBundle.submissions
+				.get("submissionFromS2C1ToS1C1");
+		
+		//checking editing of one of the submissions
+		alterSubmission(sub1);
+		
+		submissionContainer.add(sub1);
+		apiServlet.editSubmission(submissionContainer);
+		
+		verifyPresentInDatastore(sub1);
+		verifyPresentInDatastore(sub2);
+		
+		//check editing both submissions
+		alterSubmission(sub1);
+		alterSubmission(sub2);
+		
+		submissionContainer = new ArrayList<Submission>();
+		submissionContainer.add(sub1);
+		submissionContainer.add(sub2);
+		apiServlet.editSubmission(submissionContainer);
+		
+		verifyPresentInDatastore(sub1);
+		verifyPresentInDatastore(sub2);
+		
+		//TODO: more testing
+		
+	}
+	
+	@Test
+	public void testEditTfs() throws Exception{
+		printTestCaseHeader(getNameOfThisMethod());
+		refreshDataInDatastore();
+		
+		TeamFormingSession tfs1 = dataBundle.teamFormingSessions.get("tfsInCourse1");
+		tfs1.setGracePeriod(tfs1.getGracePeriod()+1);
+		tfs1.setInstructions(tfs1.getInstructions()+"x");
+		tfs1.setProfileTemplate(tfs1.getProfileTemplate()+"y");
+		tfs1.setStart(getDateOffsetToCurrentTime(1));
+		tfs1.setDeadline(getDateOffsetToCurrentTime(2));
+		apiServlet.getTfs(tfs1);
+		verifyPresentInDatastore(tfs1);
+		
+		//TODO: more testing
+	}
+	
+	@Test
+	public void testEditTeamProfile() throws Exception{
+		printTestCaseHeader(getNameOfThisMethod());
+		refreshDataInDatastore();
+		
+		TeamProfile teamProfile1 = dataBundle.teamProfiles.get("profileOfTeam1.1");
+		String originalTeamName = teamProfile1.getTeamName();
+		teamProfile1.setTeamName(teamProfile1.getTeamName()+"new");
+		teamProfile1.setTeamProfile(new Text(teamProfile1.getTeamProfile().getValue()+"x"));
+		apiServlet.editTeamProfile(originalTeamName,teamProfile1);
+		verifyPresentInDatastore(teamProfile1);
+		
+	}
 	// ------------------------------------------------------------------------
 
+	private void alterSubmission(Submission submission) {
+		submission.setPoints(submission.getPoints()+10);
+		submission.setCommentsToStudent(new Text(submission.getCommentsToStudent().getValue()+"x"));
+		submission.setJustification(new Text(submission.getJustification().getValue()+"y"));
+	}
+	
+	private Date getDateOffsetToCurrentTime(int offsetDays) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(cal.getTime());
+		cal.add(Calendar.DATE, +offsetDays);
+		return cal.getTime();
+	}
+	
 	private void verifyPresentInDatastore(String dataBundleJsonString)
 			throws EntityDoesNotExistException {
 
