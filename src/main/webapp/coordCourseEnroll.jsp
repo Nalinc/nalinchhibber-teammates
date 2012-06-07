@@ -35,10 +35,10 @@
 	<div id="frameBody">
 		<div id="frameBodyWrapper">
 			<div id="topOfPage"></div>
-			<div id="headerOperation">
-				<h1>Enroll Students for <%= helper.courseID %></h1>
-			</div>
 			<% if(helper.isResult){ %>
+				<div id="headerOperation">
+					<h1>Enrollment Results for <%= helper.courseID %></h1>
+				</div>
 				<div id="coordinatorCourseEnrollmentResults">
 					<%	List<StudentData> students = helper.studentsError;
 						if(students.size()>0){ %>
@@ -60,7 +60,8 @@
 								<td><%= student.comments %></td>
 							</tr>
 						<% 	} %>
-						</table> 
+						</table>
+						<br />
 					<%	} %>
 					<%	students = helper.studentsNew;
 						if(students.size()>0){ %>
@@ -82,7 +83,8 @@
 								<td><%= student.comments %></td>
 							</tr>
 						<% 	} %>
-						</table> 
+						</table>
+						<br />
 					<%	} %>
 					<%	students = helper.studentsModified;
 						if(students.size()>0){ %>
@@ -104,7 +106,8 @@
 								<td><%= student.comments %></td>
 							</tr>
 						<% 	} %>
-						</table> 
+						</table>
+						<br />
 					<%	} %>
 					<%	students = helper.studentsUnmodified;
 						if(students.size()>0){ %>
@@ -126,7 +129,8 @@
 								<td><%= student.comments %></td>
 							</tr>
 						<% 	} %>
-						</table> 
+						</table>
+						<br />
 					<%	} %>
 					<%	students = helper.studentsOld;
 						if(students.size()>0){ %>
@@ -148,14 +152,18 @@
 								<td><%= student.comments %></td>
 							</tr>
 						<% 	} %>
-						</table> 
+						</table>
+						<br />
 					<%	} %>
 				</div>
 				<div id="coordinatorCourseEnrollmentButtons">
 					<input type="button" class="t_back button" onclick="location.href='<%= Common.JSP_COORD_COURSE %>'" value="Back" />
 				</div>
 			<% } else { %>
-				<form action="<%= Common.JSP_COORD_COURSE_ENROLL %>" method="post">
+				<div id="headerOperation">
+					<h1>Enroll Students for <%= helper.courseID %></h1>
+				</div>
+				<form action="<%= helper.getCourseEnrollLink(helper.courseID) %>" method="post">
 				<input type="hidden" name="courseid" value="<%= helper.courseID %>"></input>
 				<div id="coordinatorCourseEnrollment">
 					<img src="/images/enrollInstructions.png" style="width:1012,height:324" border="0" />
@@ -163,7 +171,7 @@
 					<br />
 					<table class="headerform"><tr>
 						<td class="fieldname" style="width: 250px;">Student details:</td>
-						<td><textarea rows="6" cols="135" class ="textvalue" name="enrollstudents" id="information"></textarea></td>
+						<td><textarea rows="6" cols="135" class ="textvalue" name="enrollstudents" id="enrollstudents"></textarea></td>
 					</tr></table>
 				</div>
 				<br />
@@ -176,7 +184,7 @@
 				<%	} %>
 				<div id="coordinatorCourseEnrollmentButtons">
 					<input type="submit" class="button" name="button_enroll" id="button_enroll" value="Enroll students"
-						onclick="return checkEnrollmentInput(document.getElementById('information').value)"/>
+						onclick="return checkEnrollmentInput(document.getElementById('enrollstudents').value)"/>
 					<input type="button" class="t_back button" onclick="location.href='<%= Common.JSP_COORD_COURSE %>'" value="Back" />
 				</div>
 				</form>

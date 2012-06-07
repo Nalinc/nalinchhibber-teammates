@@ -14,7 +14,7 @@
 	<script src="/js/helperNew.js" language="JavaScript"></script>
 	<script src="/js/commonNew.js" language="JavaScript"></script>
 	
-	<script src="/js/coordCourse.js" language="JavaScript"></script>
+	<script src="/js/coordCourseEnroll.js" language="JavaScript"></script>
 	<script src="/js/coordinatorNew.js" language="JavaScript"></script>
 
 </head>
@@ -37,7 +37,7 @@
 					<li><a href="/page/coordEval" class="t_evaluations">Evaluations</a></li>
 					<li><a target="_blank" href="http://www.comp.nus.edu.sg/%7Eteams/coordinatorhelp.html" class="t_help">Help</a></li>
 					<li><a href="/logout.jsp" class="t_logout">Logout</a>
-					 (teammates.demo.coord)</li>
+					 (teammates.test)</li>
 				</ul>
 			</div>
 		</div>
@@ -46,69 +46,31 @@
 	<div id="frameBody">
 		<div id="frameBodyWrapper">
 			<div id="topOfPage"></div>
-			<div id="headerOperation">
-				<h1>Add New Course</h1>
-			</div>
-			<div id="coordinatorCourseManagement">
-				<form name="form_addcourse" action="/page/coordCourse" method="get">
-					<table class="addform round">
-						<tbody><tr>
-							<td><b>Course ID:</b></td>
-						</tr>
-						<tr>
-							<td><input type="text" tabindex="1" maxlength="21" onmouseout="hideddrivetip()" onmouseover="ddrivetip('Enter the identifier of the course, e.g.CS3215-Sem1.')" value="" id="courseid" name="courseid" class="addinput" /></td>
-						</tr>
-						<tr>
-							<td><b>Course Name:</b></td>
-						</tr>
-						<tr>
-							<td><input type="text" tabindex="2" maxlength="38" onmouseout="hideddrivetip()" onmouseover="ddrivetip('Enter the name of the course, e.g. Software Engineering.')" value="" id="coursename" name="coursename" class="addinput" /></td>
-						</tr>
-						<tr>
-							<td><input type="submit" tabindex="3" value="Add Course" onclick="return verifyAddCourse();" class="button" id="btnAddCourse" /></td>
-						</tr>
-					</tbody></table>
+			
+				<div id="headerOperation">
+					<h1>Enroll Students for CCEnrollUiT.CS2104</h1>
+				</div>
+				<form method="post" action="/page/coordCourseEnroll?courseid=CCEnrollUiT.CS2104">
+				<input type="hidden" value="CCEnrollUiT.CS2104" name="courseid" />
+				<div id="coordinatorCourseEnrollment">
+					<img border="0" style="width:1012,height:324" src="/images/enrollInstructions.png" />
+					<p style="text-align: center;" class="info">Recommended maximum class size : 100 students</p>
+					<br />
+					<table class="headerform"><tbody><tr>
+						<td style="width: 250px;" class="fieldname">Student details:</td>
+						<td><textarea id="enrollstudents" name="enrollstudents" class="textvalue" cols="135" rows="6"></textarea></td>
+					</tr></tbody></table>
+				</div>
+				<br />
+				
+					<div style="display: none" id="statusMessage"></div>
+				
+				<div id="coordinatorCourseEnrollmentButtons">
+					<input type="submit" onclick="return checkEnrollmentInput(document.getElementById('enrollstudents').value)" value="Enroll students" id="button_enroll" name="button_enroll" class="button" />
+					<input type="button" value="Back" onclick="location.href='/page/coordCourse'" class="t_back button" />
+				</div>
 				</form>
-			</div>
-			<br />
 			
-				<div style="display: none" id="statusMessage"></div>
-			
-			<div id="coordinatorCourseTable">
-				<br />
-				<br />
-				<table id="dataform">
-					<tbody><tr>
-						<th><input type="button" onclick="javascript:toggleSortCoursesByID(this,1);" id="button_sortcourseid" class="buttonSortAscending" />
-							Course ID</th>
-						<th><input type="button" onclick="javascript:toggleSortCoursesByName(this,2);" id="button_sortcoursename" class="buttonSortNone" />
-							Course Name</th>
-						<th class="centeralign">Teams</th>
-						<th class="centeralign">Total Students</th>
-						<th class="centeralign">Total Unregistered</th>
-						<th class="centeralign">Action(s)</th>
-					</tr>
-					
-						<tr>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-						</tr>
-					
-				</tbody></table>
-				<br />
-				<br />
-				<br />
-				
-					No records found. <br />
-					<br />
-					<br />
-					<br />
-				
-			</div>
 		</div>
 	</div>
 
