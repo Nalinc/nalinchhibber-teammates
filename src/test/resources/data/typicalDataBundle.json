@@ -1,0 +1,270 @@
+{
+  "coords": {
+  	"typicalCoord1": {"id": "idOfTypicalCoord1", "name":"Typical Coordinator1", "email":"typicalCoord1@gmail.com"},
+  	"typicalCoord2": {"id": "idOfTypicalCoord2", "name":"Typical Coordinator2", "email":"typicalCoord2@gmail.com"},
+  	"typicalCoord3": {"id": "idOfTypicalCoord3", "name":"Typical Coordinator3", "email":"typicalCoord3@gmail.com"}
+  },
+  "courses": {
+	  "course1OfCoord1": {
+      "coord" : "idOfTypicalCoord1",
+	    "id": "idOfCourse1OfCoord1",
+	    "name": "course1OfCoord1 name"
+	  },
+	  "course2OfCoord1": {
+      "coord" : "idOfTypicalCoord1",
+	    "id": "idOfCourse2OfCoord1",
+	    "name": "course2OfCoord1 name"
+	  },
+	  "course1OfCoord2": {
+      "coord" : "idOfTypicalCoord2",
+	    "id": "idOfCourse1OfCoord2",
+	    "name": "course1OfCoord2 name"
+	  },
+	  "course2OfCoord2": {
+      "coord" : "idOfTypicalCoord2",
+	    "id": "idOfCourse2OfCoord2",
+	    "name": "course2OfCoord2 name"
+	  }
+  },
+  
+  
+  "students": {
+    "student1InCourse1":{
+      "email": "student1InCourse1@gmail.com",
+      "name": "student1 In Course1",
+      "team": "Team 1.1",
+      "id": "student1InCourse1",
+      "comments" : "comment for student1InCourse1",
+      "course" : "idOfCourse1OfCoord1",
+	  "profile" : {"value" : "profiledetail for student1InCourse1" }
+    },
+    "student2InCourse1":{
+      "email": "student2InCourse1@gmail.com",
+      "name": "student2 In Course1",
+      "id": "student2InCourse1",
+      "team": "Team 1.1",
+ 	  "course" : "idOfCourse1OfCoord1",
+      "profile" : {"value" : "profiledetail for student2InCourse1" }
+    },
+    "student3InCourse1":{
+      "email": "student3InCourse1@gmail.com",
+      "name": "student3 In Course1",
+      "id": "student3InCourse1",
+      "team": "Team 1.1",
+      "course" : "idOfCourse1OfCoord1",
+      "profile" : {"value" : "profiledetail for student3InCourse1" }
+    },
+    "student4InCourse1":{
+      "email": "student4InCourse1@gmail.com",
+      "name": "student4 In Course1",
+      "id": "student4InCourse1",
+      "team": "Team 1.1",
+ 	  "course" : "idOfCourse1OfCoord1",
+      "profile" : {"value" : "profiledetail for student4InCourse1" }
+    },
+    "student5InCourse1":{
+      "email": "student5InCourse1@gmail.com",
+      "name": "student5 In Course1",
+      "id": "student5InCourse1",
+      "team": "Team 1.2",
+      "course" : "idOfCourse1OfCoord1",
+      "profile" : {"value" : "profiledetail for student5InCourse1" }
+    },
+    "student1InCourse2":{
+      "email": "student1InCourse2@gmail.com",
+      "name": "student1 In Course2",
+      "id": "student1InCourse2",
+      "team": "Team 2.1",
+      "course" : "idOfCourse1OfCoord2",
+      "profile" : {"value" : "profiledetail for student1InCourse2" }
+    },
+    "student2InCourse2":{
+      "email": "student2InCourse2@gmail.com",
+      "name": "student2 In Course2",
+      "id": "student2InCourse1",
+      "comments": "#####This is the same student as student2InCourse1 but using different name and email #####",
+      "team": "Team 2.1",
+      "course" : "idOfCourse1OfCoord2",
+      "profile" : {"value" : "profiledetail for student2InCourse2" }
+    }
+  },
+  
+  "evaluations" : {
+  
+    "evaluation1InCourse1OfCoord1": {
+      "course" : "idOfCourse1OfCoord1",
+      "name" : "evaluation1 In Course1",
+      "instructions": "instructions for evaluation1InCourse1",
+      "gracePeriod": 10,
+      "p2pEnabled" : true,
+      "startTime" : "2012-04-01 11:59 PM",
+      "endTime" : "2013-04-30 11:59 PM",
+      "activated" : true,
+      "published" : false,
+      "timeZone" : 2.0
+    },
+    "evaluation2InCourse1OfCoord1": {
+      "course" : "idOfCourse1OfCoord1",
+      "gracePeriod": 20,
+      "instructions": "Please please fill in the second evaluation",
+      "name": "evaluation2 In Course1",
+      "p2pEnabled": true
+    },
+    "evaluation1InCourse2OfCoord1": {
+      "course" : "idOfCourse2OfCoord1",
+      "gracePeriod": 20,
+      "instructions": "Please please fill in the second evaluation",
+      "name": "evaluation name",
+      "p2pEnabled": true
+    },
+    "evaluation1InCourse1OfCoord2": {
+      "course" : "idOfCourse1OfCoord2",
+      "gracePeriod": 20,
+      "instructions": "instructions for evaluation1InCourse2",
+      "name": "evaluation1 In Course2",
+      "p2pEnabled": true
+    }
+  },
+  
+  "submissions" : {
+    "submissionFromS1C1ToS1C1" :{
+      "reviewer" : "student1InCourse1@gmail.com",
+      "reviewee" : "student1InCourse1@gmail.com",
+      "course" : "idOfCourse1OfCoord1",
+      "evaluation" : "evaluation1 In Course1",
+      "points" : 10,
+      "justification" : {"value" : "justification of student1InCourse1 rating to student1InCourse1"},
+      "p2pFeedback" : {"value" :"student1InCourse1 view of team dynamics"},
+      "team" : "Team 1.1"
+    },
+    "submissionFromS1C1ToS2C1" :{
+      "reviewer" : "student1InCourse1@gmail.com",
+      "reviewee" : "student2InCourse1@gmail.com",
+      "course" : "idOfCourse1OfCoord1",
+      "evaluation" : "evaluation1 In Course1",
+      "points" : 10,
+      "justification" : {"value" : "justification of student1InCourse1 rating to student2InCourse1"},
+      "p2pFeedback" : {"value" :"comments from student1InCourse1 to student2InCourse1"},
+      "team" : "Team 1.1"
+    },
+    "submissionFromS2C1ToS1C1" :{
+      "reviewer" : "student2InCourse1@gmail.com",
+      "reviewee" : "student1InCourse1@gmail.com",
+      "course" : "idOfCourse1OfCoord1",
+      "evaluation" : "evaluation1 In Course1",
+      "points" : 20,
+      "justification" : {"value" : "justification of student2InCourse1 rating to student1InCourse1"},
+      "p2pFeedback" : {"value" :"comments from student2InCourse1 to student1InCourse1"},
+      "team" : "Team 1.1"
+    },
+    "submissionFromS4C1ToS1C1" :{
+      "reviewer" : "student4InCourse1@gmail.com",
+      "reviewee" : "student1InCourse1@gmail.com",
+      "course" : "idOfCourse1OfCoord1",
+      "evaluation" : "evaluation1 In Course1",
+      "points" : 150,
+      "justification" : {"value" : "justification of student4InCourse1 rating to student1InCourse1"},
+      "p2pFeedback" : {"value" :"comments from student4InCourse1 to student1InCourse1"},
+      "team" : "Team 1.1"
+    },
+    "submissionFromS1C2ToS2C2" :{
+      "reviewer" : "student1InCourse2@gmail.com",
+      "reviewee" : "student2InCourse2@gmail.com",
+      "course" : "idOfCourse1OfCoord2",
+      "evaluation" : "evaluation1 In Course2",
+      "points" : 20,
+      "justification" : {"value" : "justification of student1InCourse2 rating to student2InCourse2"},
+      "p2pFeedback" : {"value" :"comments from student1InCourse2 to student2InCourse2"},
+      "team" : "Team 2.1"
+    }
+  
+  },
+  
+  "teamFormingSessions": {
+    "tfsInCourse1":{
+      "course" : "idOfCourse1OfCoord1",
+      "startTime" : "2012-04-01 11:59 PM",
+      "endTime" : "2012-04-15 11:59 PM",
+      "timeZone" : 8.0,
+      "gracePeriod" : 10,
+      "instructions" : "instructions for tfsInCourse1",
+      "profileTemplate" : "profile template for tfsInCourse1",
+      "activated" : false
+    },
+    "tfsInCourse2":{
+      "course" : "idOfCourse1OfCoord2",
+      "startTime" : "2012-04-01 11:59 PM",
+      "endTime" : "2012-04-15 11:59 PM",
+      "timeZone" : 6.0,
+      "gracePeriod" : 5,
+      "instructions" : "instructions for tfsInCourse2",
+      "profileTemplate" : "profile template for tfsInCourse2",
+      "activated" : false
+    },
+    "tfsInCourse3":{
+      "course" : "idOfCourse2OfCoord2",
+      "startTime" : "2012-04-01 11:59 PM",
+      "endTime" : "2012-04-15 11:59 PM",
+      "timeZone" : 6.0,
+      "gracePeriod" : 5,
+      "instructions" : "instructions for tfsInCourse3",
+      "profileTemplate" : "profile template for tfsInCourse3",
+      "activated" : false
+    }
+  },
+  
+  "teamProfiles" : {
+    "profileOfTeam1.1" : {
+      "course" : "idOfCourse1OfCoord1",
+      "team" : "Team 1.1",
+      "profile" : {"value" :"team profile of Team 1.1"}
+    },
+    "profileOfTeam1.2" : {
+      "course" : "idOfCourse1OfCoord1",
+      "team" : "Team 1.2",
+      "profile" : {"value" :"team profile of Team 1.2"}
+    },
+    "profileOfTeam2.1" : {
+      "course" : "idOfCourse1OfCoord2",
+      "team" : "Team 2.1",
+      "profile" : {"value" :"team profile of Team 2.1"}
+    },
+    "profileOfTeam3.1" : {
+      "course" : "idOfCourse2OfCoord2",
+      "team" : "Team 3.1",
+      "profile" : {"value" :"team profile of Team 3.1"}
+    }
+  },
+  
+  "studentActions" : {
+    "tfsLogMessage1ForTfsInCourse1" : {
+      "course" : "idOfCourse1OfCoord1",
+      "time" : "2012-01-01 01:01 AM",
+      "name" : "student1 In Course1",
+      "email" : "student1InCourse1@gmail.com",
+      "action" :  {"value" :"log message 1 of course1, student1InCourse1@gmail.com"}
+    },    
+    "tfsLogMessage2ForTfsInCourse1" : {
+      "course" : "idOfCourse1OfCoord1",
+      "time" : "2012-02-02 02:02 AM",
+      "name" : "student2 In Course1",
+      "email" : "student2InCourse1@gmail.com",
+      "action" :  {"value" :"log message 2 of course1, student2InCourse1@gmail.com"}
+    },    
+    "tfsLogMessage1ForTfsInCourse2" : {
+      "course" : "idOfCourse1OfCoord2",
+      "time" : "2012-03-03 03:03 AM",
+      "name" : "student1 In Course2",
+      "email" : "student1InCourse2@gmail.com",
+      "action" :  {"value" :"log message 1 of course2, student1InCourse2@gmail.com"}
+    },    
+    "tfsLogMessage1ForTfsInCourse3" : {
+      "course" : "idOfCourse2OfCoord2",
+      "time" : "2012-03-03 03:03 AM",
+      "name" : "student1 In Course3",
+      "email" : "student1InCourse3@gmail.com",
+      "action" :  {"value" :"log message 1 of course3, student1InCourse3@gmail.com"}
+    }
+  }   
+
+}
