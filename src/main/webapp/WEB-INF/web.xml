@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
+
+	<filter>
+		<filter-name>DatastoreFilter</filter-name>
+		<filter-class>teammates.DatastoreFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>DatastoreFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<filter>
+	    <description>Filter that do the login part for each JSP page</description>
+	    <filter-name>LoginFilter</filter-name>
+	    <filter-class>teammates.jsp.LoginFilter</filter-class>
+	    <init-param>
+	        <description>Files excluded from login check. "|"-separated</description>
+	        <param-name>ExcludedFiles</param-name>
+	        <param-value></param-value>
+	    </init-param>
+	</filter>
+	<filter-mapping>
+	    <filter-name>LoginFilter</filter-name>
+	    <url-pattern>/page/*</url-pattern>
+	</filter-mapping>
+
+	<servlet>
+		<servlet-name>APIServlet</servlet-name>
+		<servlet-class>teammates.api.APIServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>APIServlet</servlet-name>
+		<url-pattern>/api</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>TeamFormingServlet</servlet-name>
+		<servlet-class>teammates.TeamFormingServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>TeamFormingServlet</servlet-name>
+		<url-pattern>/teamforming</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+    	<servlet-name>coordinator.jsp</servlet-name>
+    	<jsp-file>/coordinator.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+    	<servlet-name>coordinator.jsp</servlet-name>
+    	<url-pattern>/coordinator.jsp?teamforming</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>Teammates</servlet-name>
+		<servlet-class>teammates.TeammatesServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Teammates</servlet-name>
+		<url-pattern>/teammates</url-pattern>
+	</servlet-mapping>
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+	<servlet>
+		<servlet-name>Email</servlet-name>
+		<servlet-class>teammates.EmailServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Email</servlet-name>
+		<url-pattern>/email</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>EvaluationActivation</servlet-name>
+		<servlet-class>teammates.EvaluationActivationServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EvaluationActivation</servlet-name>
+		<url-pattern>/evaluationactivation</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>TeamFormingSessionActivation</servlet-name>
+		<servlet-class>teammates.TeamFormingSessionActivationServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>TeamFormingSessionActivation</servlet-name>
+		<url-pattern>/teamformingsessionactivation</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>AutomatedReminders</servlet-name>
+		<servlet-class>teammates.AutomatedRemindersServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AutomatedReminders</servlet-name>
+		<url-pattern>/automatedreminders</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+	    <description>Servlet that handles Coordinator homepage</description>
+	    <servlet-name>CoordHome</servlet-name>
+	    <servlet-class>teammates.servlet.CoordHomeServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordHome</servlet-name>
+	    <url-pattern>/page/coordHome</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles Coordinator Course page (including add course)</description>
+	    <servlet-name>CoordCourse</servlet-name>
+	    <servlet-class>teammates.servlet.CoordCourseServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordCourse</servlet-name>
+	    <url-pattern>/page/coordCourse</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles course deletion action</description>
+	    <servlet-name>CoordCourseDelete</servlet-name>
+	    <servlet-class>teammates.servlet.CoordCourseDeleteServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordCourseDelete</servlet-name>
+	    <url-pattern>/page/coordCourseDelete</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles course enroll page (includes enroll result page)</description>
+	    <servlet-name>CoordCourseEnroll</servlet-name>
+	    <servlet-class>teammates.servlet.CoordCourseEnrollServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordCourseEnroll</servlet-name>
+	    <url-pattern>/page/coordCourseEnroll</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles course details page</description>
+	    <servlet-name>CoordCourseDetails</servlet-name>
+	    <servlet-class>teammates.servlet.CoordCourseDetailsServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordCourseDetails</servlet-name>
+	    <url-pattern>/page/coordCourseDetails</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles course student delete page</description>
+	    <servlet-name>CoordCourseStudentDelete</servlet-name>
+	    <servlet-class>teammates.servlet.CoordCourseStudentDeleteServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordCourseStudentDelete</servlet-name>
+	    <url-pattern>/page/coordCourseStudentDelete</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles evaluation page (includes evaluation add)</description>
+	    <servlet-name>CoordEval</servlet-name>
+	    <servlet-class>teammates.servlet.CoordEvalServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordEval</servlet-name>
+	    <url-pattern>/page/coordEval</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles evaluation deletion</description>
+	    <servlet-name>CoordEvalDelete</servlet-name>
+	    <servlet-class>teammates.servlet.CoordEvalDeleteServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordEvalDelete</servlet-name>
+	    <url-pattern>/page/coordEvalDelete</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles evaluation results page</description>
+	    <servlet-name>CoordEvalResults</servlet-name>
+	    <servlet-class>teammates.servlet.CoordEvalResultsServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordEvalResults</servlet-name>
+	    <url-pattern>/page/coordEvalResults</url-pattern>
+	</servlet-mapping>
+	
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>AutomatedEmails</web-resource-name>
+            <url-pattern>/automatedreminders</url-pattern>
+            <url-pattern>/evaluationactivation</url-pattern>
+            <url-pattern>/teamformingsessionactivation</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>DisallowDirectAccess</web-resource-name>
+            <description>Pages that should not be accessed directly</description>
+            <url-pattern>*.jsp</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>AllowDirectAccess</web-resource-name>
+            <description>Pages that are allowed to be accessed directly</description>
+            <description>This have precedence over the disallowance</description>
+            <url-pattern>administrator.jsp</url-pattern>
+            <url-pattern>coordinator.jsp</url-pattern>
+            <url-pattern>index.jsp</url-pattern>
+            <url-pattern>student.jsp</url-pattern>
+            <url-pattern>logout.jsp</url-pattern>
+            <url-pattern>mobile.jsp</url-pattern>
+            <url-pattern>oldIE.jsp</url-pattern>
+            <url-pattern>unauthorized.jsp</url-pattern>
+            <url-pattern>errorPage.jsp</url-pattern>
+        </web-resource-collection>
+    </security-constraint>
+    <error-page>
+        <error-code>403</error-code>
+        <location>/unauthorized.jsp</location>
+    </error-page>
+</web-app>
