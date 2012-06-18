@@ -143,6 +143,7 @@ public class Common {
 	
 	public static final String PARAM_JOIN_COURSE = "regkey";
 	public static final String PARAM_STUDENT_EMAIL = "studentemail";
+	public static final String PARAM_BY_REVIEWER = "byreviewer";
 	
 	public static final String PARAM_FROM_EMAIL = "fromemail";
 	public static final String PARAM_TO_EMAIL = "toemail";
@@ -165,7 +166,7 @@ public class Common {
 	public static final String PAGE_COORD_COURSE = "/page/coordCourse"; // Done
 	public static final String PAGE_COORD_COURSE_DELETE = "/page/coordCourseDelete"; // Done
 	public static final String PAGE_COORD_COURSE_DETAILS = "/page/coordCourseDetails"; // Done
-	public static final String PAGE_COORD_COURSE_STUDENT_DETAILS = "/page/coordCourseStudentDetails";
+	public static final String PAGE_COORD_COURSE_STUDENT_DETAILS = "/page/coordCourseStudentDetails"; // Done
 	public static final String PAGE_COORD_COURSE_STUDENT_EDIT = "/page/coordCourseStudentEdit";
 	public static final String PAGE_COORD_COURSE_STUDENT_DELETE = "/page/coordCourseStudentDelete"; // Done
 	public static final String PAGE_COORD_COURSE_ENROLL = "/page/coordCourseEnroll"; // Done
@@ -179,15 +180,16 @@ public class Common {
 	public static final String PAGE_COORD_EVAL_RESULTS = "/page/coordEvalResults"; // Done
 	public static final String PAGE_COORD_EVAL_SUBMISSION_VIEW = "/page/coordEvalSubmissionView";
 	public static final String PAGE_COORD_EVAL_SUBMISSION_EDIT = "/page/coordEvalSubmissionEdit";
+	public static final String PAGE_COORD_EVAL_SUBMISSION_EDIT_HANDLER = "/page/coordEvalSubmissionEditHandler"; // Done
 
 	public static final String PAGE_STUDENT_HOME = "/page/studentHome"; // Done
 	public static final String PAGE_STUDENT_JOIN_COURSE = "/page/studentCourseJoin"; // Done
 	public static final String PAGE_STUDENT_COURSE_PROFILE = "/page/studentCourseProfile";
-	public static final String PAGE_STUDENT_COURSE_DETAILS = "/page/studentCourseDetails";
+	public static final String PAGE_STUDENT_COURSE_DETAILS = "/page/studentCourseDetails"; // Done
 	/** To submit evaluation and also to edit */
 	public static final String PAGE_STUDENT_EVAL_SUBMISSION_EDIT = "/page/studentEvalEdit"; // Done
 	public static final String PAGE_STUDENT_EVAL_SUBMISSION_EDIT_HANDLER = "/page/studentEvalEditHandler"; // Done
-	public static final String PAGE_STUDENT_EVAL_RESULTS = "/page/studentEvalResults";
+	public static final String PAGE_STUDENT_EVAL_RESULTS = "/page/studentEvalResults"; // Done
 
 	/*
 	 * JSP pages links. These links are there to provide easeness in case of
@@ -220,8 +222,10 @@ public class Common {
 	public static final String JSP_STUDENT_HEADER = "/jsp/studentHeader.jsp"; // Done
 	public static final String JSP_FOOTER = "/jsp/footer.jsp"; // Done
 	public static final String JSP_STATUS_MESSAGE = "/jsp/statusMessage.jsp"; // Done
+	public static final String JSP_EVAL_SUBMISSION_EDIT = "/jsp/evalSubmissionEdit.jsp"; // Done
 
 	public static final String JSP_LOGOUT = "/logout.jsp"; // Done
+	public static final String JSP_SAVE_MESSAGE = "/saveMessage.jsp";
 	public static final String JSP_UNAUTHORIZED = "/unauthorized.jsp"; // Done
 	public static final String JSP_ERROR_PAGE = "/errorPage.jsp"; // Done
 	public static final String JSP_ENTITY_NOT_FOUND_PAGE = "/entityNotFoundPage.jsp"; // Done
@@ -251,7 +255,9 @@ public class Common {
 	public static final String MESSAGE_EVALUATION_NAMEINVALID = "Please use only alphabets, numbers and whitespace in evaluation name.";
 	public static final String MESSAGE_EVALUATION_NAME_LENGTHINVALID = "Evaluation name should not exceed 38 characters.";
 	public static final String MESSAGE_EVALUATION_SCHEDULEINVALID = "The evaluation schedule (start/deadline) is not valid.";
-	
+
+	public static final String MESSAGE_COORD_EVALUATION_SUBMISSION_RECEIVED = "You have edited %s's submission for evaluation %s in course %s successfully<br />" +
+																			"This change will not be reflected here until you refresh the page.";
 	public static final String MESSAGE_EVALUATION_SUBMISSION_RECEIVED = "Your submission for %s in course %s has been saved successfully";
 
 	// DIV tags for HTML testing
