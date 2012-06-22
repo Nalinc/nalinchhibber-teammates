@@ -2968,6 +2968,7 @@ public class BrowserInstance {
 				return;
 			}
 			if(i==PAGE_VERIFY_RETRY-1) break;
+			System.out.println("Reloading page:"+url);
 			waitAWhile(1000);
 			goToUrl(url);
 		}
