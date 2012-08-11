@@ -356,8 +356,27 @@ public class Common {
 	public static final String ERRORCODE_STRING_TOO_LONG = "ERRORCODE_STRING_TOO_LONG";
 	public static final String ERRORCODE_UNPUBLISHED_BEFORE_PUBLISHING = "ERRORCODE_UNPUBLISHED_BEFORE_PUBLISHING";
 
-	public static final int EXISTENCE_CHECKING_MAX_RETRIES = 10;
-	public static final long EXISTENCE_CHECKING_DELAY = 200;
+	/**
+	 * Build Properties Params
+	 */
+	public static String TEAMMATES_APP_ADMIN_EMAIL = null;
+	public static String TEAMMATES_APP_URL = null;
+	
+	/**
+	 * Password used by Test driver to identify itself.
+	 */
+	public static String BACKDOOR_KEY = null;
+
+	/**
+	 * Generate delay to handle slow writing IO in datastore
+	 */
+	public static long PERSISTENCE_CHECK_DURATION = 4000;
+	
+	/* Email templates */
+	public static String STUDENT_EMAIL_TEMPLATE_EVALUATION_ = null;
+	public static String STUDENT_EMAIL_TEMPLATE_EVALUATION_PUBLISHED = null;
+	public static String STUDENT_EMAIL_TEMPLATE_COURSE_JOIN = null;
+	public static String STUDENT_EMAIL_FRAGMENT_COURSE_JOIN = null;
 
 	@SuppressWarnings("unused")
 	private void ____VALIDATE_parameters___________________________________() {
@@ -727,7 +746,7 @@ public class Common {
 	public static void waitBriefly() {
 		log.info("Waiting for possible persistence delay");
 		try {
-			Thread.sleep(Common.EXISTENCE_CHECKING_DELAY);
+			Thread.sleep(200);
 		} catch (InterruptedException e) {
 			log.severe(Common.stackTraceToString(e));
 		}
@@ -741,6 +760,32 @@ public class Common {
 		StringWriter sw = new StringWriter();
 		e.printStackTrace(new PrintWriter(sw));
 		return "\n" + sw.toString();
+	}
+	
+	/**
+	 * 
+	 *  A generic function to set params from build properties
+	 * 
+	 * @param key	String of the parameter to set
+	 * @param value Value of the parameter
+	 */
+	public static void setParamsFromBuildProperties(String key, String value) {
+		if (key.equals("TEAMMATES_APP_ADMIN_EMAIL"))
+			TEAMMATES_APP_ADMIN_EMAIL = value;
+		else if (key.equals("TEAMMATES_APP_URL"))
+			TEAMMATES_APP_URL = value;
+		else if (key.equals("BACKDOOR_KEY"))
+			BACKDOOR_KEY = value;
+		else if (key.equals("PERSISTENCE_CHECK_DURATION"))
+			PERSISTENCE_CHECK_DURATION = Integer.valueOf(value).intValue();
+		else if (key.equals("STUDENT_EMAIL_TEMPLATE_EVALUATION_"))
+			STUDENT_EMAIL_TEMPLATE_EVALUATION_ = value;
+		else if (key.equals("STUDENT_EMAIL_TEMPLATE_EVALUATION_PUBLISHED"))
+			STUDENT_EMAIL_TEMPLATE_EVALUATION_PUBLISHED = value;
+		else if (key.equals("STUDENT_EMAIL_TEMPLATE_COURSE_JOIN"))
+			STUDENT_EMAIL_TEMPLATE_COURSE_JOIN = value;
+		else if (key.equals("STUDENT_EMAIL_FRAGMENT_COURSE_JOIN"))
+			STUDENT_EMAIL_FRAGMENT_COURSE_JOIN = value;
 	}
 
 }
