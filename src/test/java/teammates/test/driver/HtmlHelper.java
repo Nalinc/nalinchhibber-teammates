@@ -41,6 +41,7 @@ public class HtmlHelper {
 		html1 = preProcessHTML(html1);
 		html1 = cleanupHtml(html1);
 		html2 = preProcessHTML(html2);
+		//System.out.println(html2);
 		html2 = cleanupHtml(html2);
 		assertEquals(html1,html2);
 	}
@@ -64,8 +65,16 @@ public class HtmlHelper {
 
 		//TODO: Find another less hackish method(this is required for chrome selenium testing to work)
 		htmlString = htmlString.replaceFirst("<html>", "<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-		htmlString = htmlString.replaceAll("display: none; ", "display: none;");
-		htmlString = htmlString.replaceAll("display: block; ", "display: block;");
+		
+		//required for IE selenium testing to work
+		if (htmlString.indexOf("<!DOCTYPE") < 0){
+			htmlString = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" "
+					+"\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
+					+ "<html xmlns=\"http://www.w3.org/1999/xhtml\">"
+					+ htmlString
+					+ "</html>";
+		}
+	
 		return htmlString;
 	}
 

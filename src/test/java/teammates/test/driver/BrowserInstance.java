@@ -28,6 +28,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.CommandExecutor;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -2095,7 +2096,9 @@ public class BrowserInstance {
 	 * @param points
 	 */
 	public void setSubmissionPoint(int rowID, String points) {
-		selectDropdownByValue(By.id(Common.PARAM_POINTS + rowID), points);
+		//selectDropdownByValue(By.id(Common.PARAM_POINTS + rowID), points);
+		waitForElementPresent(By.id(Common.PARAM_POINTS + rowID));
+		selenium.select("id=" + Common.PARAM_POINTS + rowID, "value="+points);
 	}
 
 	/**
@@ -2195,7 +2198,12 @@ public class BrowserInstance {
 			selenium = new WebDriverBackedSelenium(driver,
 					TestProperties.inst().TEAMMATES_URL);
 
-		} else {
+		} else if (TestProperties.inst().BROWSER.equals("iexplore")) {
+			System.out.println("Using Iexplore.");
+			setDriver(new InternetExplorerDriver());
+			selenium = new WebDriverBackedSelenium(driver,
+					TestProperties.inst().TEAMMATES_URL);
+		}else {
 
 			System.out.println("Using " + TestProperties.inst().BROWSER);
 
