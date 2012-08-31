@@ -50,7 +50,7 @@ public class AccountsDb {
 	 */
 	public void createCoord(String googleID, String name, String email)
 			throws EntityAlreadyExistsException {
-		if (getCoord(googleID) != null) {
+		if (getCoordEntity(googleID) != null) {
 			throw new EntityAlreadyExistsException("Coordinator already exists :" + googleID);
 		}
 		Coordinator coordinator = new Coordinator(googleID, name, email);
@@ -58,8 +58,8 @@ public class AccountsDb {
 		getPM().flush();
 		
 		// Check insert operation persisted
-		Coordinator coordinatorCheck = getCoordEntity(googleID);
 		int elapsedTime = 0;
+		Coordinator coordinatorCheck = getCoordEntity(googleID);
 		while ((coordinatorCheck == null) && (elapsedTime < Common.PERSISTENCE_CHECK_DURATION)){
 			Common.waitBriefly();
 			coordinatorCheck = getCoordEntity(googleID);
@@ -103,7 +103,7 @@ public class AccountsDb {
 								String team
 							) throws EntityAlreadyExistsException {
 		
-		if(getStudent(course, email)!=null){
+		if(getStudentEntity(course, email)!=null){
 			throw new EntityAlreadyExistsException("This student already existis :"+ course + "/" + email);
 		}
 		
@@ -142,7 +142,7 @@ public class AccountsDb {
 			studentCheck = getStudentEntity(course, email);
 			elapsedTime += Common.WAIT_DURATION;
 		}
-		if(elapsedTime==Common.PERSISTENCE_CHECK_DURATION){
+		if (elapsedTime==Common.PERSISTENCE_CHECK_DURATION) {
 			log.severe("Operation did not persist in time: createStudent->"+ course + "/" + email);
 		}
 	}
@@ -342,6 +342,7 @@ public class AccountsDb {
 					"Invalid key :" + registrationKey);
 		}
 		
+
 		// If ID field is not empty -> check if this is user's googleId?
 		if(!student.getID().equals("")){
 			
@@ -448,7 +449,7 @@ public class AccountsDb {
 			coordinatorCheck = getCoordEntity(coordId);
 			elapsedTime += Common.WAIT_DURATION;
 		}
-		if(elapsedTime==Common.PERSISTENCE_CHECK_DURATION){
+		if (elapsedTime==Common.PERSISTENCE_CHECK_DURATION) {
 			log.severe("Operation did not persist in time: deleteCoord->"+coordId);
 		}
 		
@@ -503,12 +504,12 @@ public class AccountsDb {
 	 * 
 	 * @param email
 	 *            the email of the student (Precondition: Must not be null)
-	 *            
+	 *
 	 */
 	public void deleteStudent(String courseId, String email){
 		
 		Student studentToDelete = getStudentEntity(courseId, email);
-		
+
 		if (studentToDelete == null) {
 			log.warning("Trying to delete non-existent Student: " + courseId + "/" + email);
 			return;
@@ -525,7 +526,7 @@ public class AccountsDb {
 			studentCheck = getStudentEntity(courseId, email);
 			elapsedTime += Common.WAIT_DURATION;
 		}
-		if(elapsedTime==Common.PERSISTENCE_CHECK_DURATION){
+		if (elapsedTime==Common.PERSISTENCE_CHECK_DURATION) {
 			log.severe("Operation did not persist in time: deleteStudent->"+ courseId + "/" + email);
 		}
 	}
@@ -545,7 +546,7 @@ public class AccountsDb {
 
 	/**
 	 * Returns the actual Student Entity
-	 *  
+	 *
 	 * @param courseID
 	 *            the course ID (Precondition: Must not be null)
 	 * 
@@ -569,6 +570,7 @@ public class AccountsDb {
 	}
 	
 	
+
 	/**
 	 * Returns the actual Coordinator Entity
 	 * 
@@ -595,4 +597,5 @@ public class AccountsDb {
 	
 	
 	
+
 }
