@@ -77,17 +77,17 @@ public class SubmissionsDb {
 		}
 
 		// check if insert operation persisted
-		int elapsedTime = 0;
-		Submission submissionCheck = getSubmissionEntity(courseId, evaluationName, toStudent, fromStudent);
-		while ((submissionCheck == null) && (elapsedTime < Common.PERSISTENCE_CHECK_DURATION)) {
-			Common.waitBriefly();
-			submissionCheck = getSubmissionEntity(courseId, evaluationName, toStudent, fromStudent);
-			elapsedTime += Common.WAIT_DURATION;
-		}
-		if (elapsedTime == Common.PERSISTENCE_CHECK_DURATION) {
-			log.severe("Operation did not persist in time: createSubmission->"
-					+ courseId + "/" + evaluationName + " | to: " + toStudent + " | from: " + fromStudent);
-		}
+//		int elapsedTime = 0;
+//		Submission submissionCheck = getSubmissionEntity(courseId, evaluationName, toStudent, fromStudent);
+//		while ((submissionCheck == null) && (elapsedTime < Common.PERSISTENCE_CHECK_DURATION)) {
+//			Common.waitBriefly();
+//			submissionCheck = getSubmissionEntity(courseId, evaluationName, toStudent, fromStudent);
+//			elapsedTime += Common.WAIT_DURATION;
+//		}
+//		if (elapsedTime == Common.PERSISTENCE_CHECK_DURATION) {
+//			log.severe("Operation did not persist in time: createSubmission->"
+//					+ courseId + "/" + evaluationName + " | to: " + toStudent + " | from: " + fromStudent);
+//		}
 	}
 
 	
