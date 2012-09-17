@@ -42,6 +42,12 @@ public class EvaluationsStorage {
 	public void createEvaluation(EvaluationData e)
 			throws EntityAlreadyExistsException, InvalidParametersException {
 
+		// 1st level validation - throw IPE
+		if (!e.isValid()) {
+			throw new InvalidParametersException(e.getInvalidParametersInfo());
+		}
+		
+		// this operation throws EntityAlreadyExistsException
 		evaluationsDb.createEvaluation(e);
 
 		// Build submission objects for each student based on their team
