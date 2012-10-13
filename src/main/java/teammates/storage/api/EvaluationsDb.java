@@ -36,7 +36,6 @@ public class EvaluationsDb {
 	 * @throws EntityAlreadyExistsException
 	 * 
 	 */
-
 	public void createEvaluation(EvaluationData evaluationToAdd)
 			throws EntityAlreadyExistsException {
 

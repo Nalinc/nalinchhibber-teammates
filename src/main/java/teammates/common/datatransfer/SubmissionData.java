@@ -1,6 +1,9 @@
 package teammates.common.datatransfer;
 
 import static teammates.common.Common.EOL;
+
+import java.util.logging.Logger;
+
 import teammates.common.Common;
 import teammates.storage.entity.Submission;
 
@@ -35,18 +38,26 @@ public class SubmissionData {
 	public transient int normalizedToStudent = Common.UNINITIALIZED_INT;
 
 	public transient int normalizedToCoord = Common.UNINITIALIZED_INT;
+	
+	public static final String ERROR_FIELD_COURSE = "Submission must belong to a valid course\n";
+	public static final String ERROR_FIELD_EVALUATION = "Submission must belong to a valid evaluation\n";
+	public static final String ERROR_FIELD_REVIEWEE = "Submission reviewee should be a valid email\n";
+	public static final String ERROR_FIELD_REVIEWER = "Submission reviewer should be a valid email\n";
 
+	// This is needed in SubmissionDataTest.setLogLevel()
+	private static Logger log = Common.getLogger();
+	
 	public SubmissionData() {
 
 	}
 
-	public SubmissionData(String courseId, String evalName, String team,
+	public SubmissionData(String courseId, String evalName, String teamName,
 			String toStudent, String fromStudent) {
-		this.course = courseId;
-		this.evaluation = evalName;
-		this.team = team;
-		this.reviewee = toStudent;
-		this.reviewer = fromStudent;
+		this.course = courseId == null ? null : courseId.trim();
+		this.evaluation = evalName == null ? null : evalName.trim();
+		this.team = teamName == null ? null : teamName.trim();
+		this.reviewee = toStudent == null ? null : toStudent.trim();
+		this.reviewer = fromStudent == null ? null : fromStudent.trim();
 	}
 
 	public SubmissionData(Submission s) {
@@ -114,34 +125,32 @@ public class SubmissionData {
 	}
 
 	public boolean isValid() {
-
-		if (this.course == null || this.course == "" || this.evaluation == null
-				|| this.evaluation == "" || this.reviewee == null
-				|| this.reviewee == "" || this.reviewer == null
-				|| this.reviewer == "") {
-			return false;
+		if (Common.isValidCourseId(course) &&
+			Common.isValidName(evaluation) && 
+			Common.isValidEmail(reviewee) && 
+			Common.isValidEmail(reviewer)) {
+			return true;
 		}
-
-		return true;
+		return false;
 	}
 
 	public String getInvalidStateInfo() {
 		String errorMessage = "";
 
-		if (this.course == null || this.course == "") {
-			errorMessage += "Submission must belong to a course\n";
+		if (!Common.isValidCourseId(course)) {
+			errorMessage += ERROR_FIELD_COURSE;
 		}
 
-		if (this.evaluation == null || this.evaluation == "") {
-			errorMessage += "Submission must belong to an evaluation";
+		if (!Common.isValidName(evaluation)) {
+			errorMessage += ERROR_FIELD_EVALUATION;
 		}
 
-		if (this.reviewee == null || this.reviewee == "") {
-			errorMessage += "Submission reviewee cannot be null or empty\n";
+		if (!Common.isValidEmail(reviewee)) {
+			errorMessage += ERROR_FIELD_REVIEWEE;
 		}
 		
-		if (this.reviewer == null || this.reviewer == "") {
-			errorMessage += "Submission reviewer cannot be null or empty\n";
+		if (!Common.isValidEmail(reviewer)) {
+			errorMessage += ERROR_FIELD_REVIEWER;
 		}
 
 		return errorMessage;
