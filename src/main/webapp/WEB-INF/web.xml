@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
+	<filter>
+		<filter-name>DatastoreFilter</filter-name>
+		<filter-class>teammates.storage.datastore.DatastoreFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>DatastoreFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter>
+	    <description>Filter that do the login part for each JSP page</description>
+	    <filter-name>LoginFilter</filter-name>
+	    <filter-class>teammates.ui.controller.LoginFilter</filter-class>
+	    <init-param>
+	        <description>Files excluded from login check. "|"-separated</description>
+	        <param-name>ExcludedFiles</param-name>
+	        <param-value></param-value>
+	    </init-param>
+	</filter>
+	<filter-mapping>
+	    <filter-name>LoginFilter</filter-name>
+	    <url-pattern>/page/*</url-pattern>
+	</filter-mapping>
+
+	<servlet>
+		<servlet-name>LoginServlet</servlet-name>
+		<servlet-class>teammates.ui.controller.LoginServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>LoginServlet</servlet-name>
+		<url-pattern>/login</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>BackDoorServlet</servlet-name>
+		<servlet-class>teammates.logic.backdoor.BackDoorServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BackDoorServlet</servlet-name>
+		<url-pattern>/backdoor</url-pattern>
+	</servlet-mapping>
+	
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+	
+	<servlet>
+		<servlet-name>EvaluationOpeningReminders</servlet-name>
+		<servlet-class>teammates.logic.automated.EvaluationOpeningRemindersServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EvaluationOpeningReminders</servlet-name>
+		<url-pattern>/evaluationopeningreminders</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>EvaluationClosingReminders</servlet-name>
+		<servlet-class>teammates.logic.automated.EvaluationClosingRemindersServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EvaluationClosingReminders</servlet-name>
+		<url-pattern>/evaluationclosingreminders</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>AdminSearchTask</servlet-name>
+		<servlet-class>teammates.ui.controller.AdminSearchTaskServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+        <servlet-name>AdminSearchTask</servlet-name>
+        <url-pattern>/searchTask</url-pattern>
+    </servlet-mapping>
+	<servlet>
+	    	<servlet-name>AdminHome</servlet-name>
+	    	<servlet-class>teammates.ui.controller.AdminHomeServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>AdminHome</servlet-name>
+	    <url-pattern>/page/adminHome</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <servlet-name>AdminExceptionTest</servlet-name>
+	    <servlet-class>teammates.ui.controller.AdminExceptionTestServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>AdminExceptionTest</servlet-name>
+	    <url-pattern>/page/adminExceptionTest</url-pattern>
+	</servlet-mapping>
+	<servlet>
+        <servlet-name>AdminSearch</servlet-name>
+        <servlet-class>teammates.ui.controller.AdminSearchServlet</servlet-class>
+    </servlet>
+	<servlet-mapping>
+        <servlet-name>AdminSearch</servlet-name>
+        <url-pattern>/page/adminSearch</url-pattern>
+    </servlet-mapping>
+	<servlet>
+	    	<servlet-name>AdminActivityLog</servlet-name>
+	    	<servlet-class>teammates.ui.controller.AdminActivityLogServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>AdminActivityLog</servlet-name>
+	    <url-pattern>/page/adminActivityLog</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles Coordinator homepage</description>
+	    <servlet-name>CoordHome</servlet-name>
+	    <servlet-class>teammates.ui.controller.CoordHomeServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordHome</servlet-name>
+	    <url-pattern>/page/coordHome</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles Coordinator Course page (including add course)</description>
+	    <servlet-name>CoordCourse</servlet-name>
+	    <servlet-class>teammates.ui.controller.CoordCourseServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordCourse</servlet-name>
+	    <url-pattern>/page/coordCourse</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles course deletion action</description>
+	    <servlet-name>CoordCourseDelete</servlet-name>
+	    <servlet-class>teammates.ui.controller.CoordCourseDeleteServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordCourseDelete</servlet-name>
+	    <url-pattern>/page/coordCourseDelete</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles coordinator remind students to join course action</description>
+	    <servlet-name>CoordCourseRemind</servlet-name>
+	    <servlet-class>teammates.ui.controller.CoordCourseRemindServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordCourseRemind</servlet-name>
+	    <url-pattern>/page/coordCourseRemind</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles course enroll page (includes enroll result page)</description>
+	    <servlet-name>CoordCourseEnroll</servlet-name>
+	    <servlet-class>teammates.ui.controller.CoordCourseEnrollServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordCourseEnroll</servlet-name>
+	    <url-pattern>/page/coordCourseEnroll</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles course details page</description>
+	    <servlet-name>CoordCourseDetails</servlet-name>
+	    <servlet-class>teammates.ui.controller.CoordCourseDetailsServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordCourseDetails</servlet-name>
+	    <url-pattern>/page/coordCourseDetails</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles the details page of a student in a course</description>
+	    <servlet-name>CoordCourseStudentDetails</servlet-name>
+	    <servlet-class>teammates.ui.controller.CoordCourseStudentDetailsServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordCourseStudentDetails</servlet-name>
+	    <url-pattern>/page/coordCourseStudentDetails</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles the edit page of a student in a course</description>
+	    <servlet-name>CoordCourseStudentEdit</servlet-name>
+	    <servlet-class>teammates.ui.controller.CoordCourseStudentEditServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordCourseStudentEdit</servlet-name>
+	    <url-pattern>/page/coordCourseStudentEdit</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles course student delete page</description>
+	    <servlet-name>CoordCourseStudentDelete</servlet-name>
+	    <servlet-class>teammates.ui.controller.CoordCourseStudentDeleteServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordCourseStudentDelete</servlet-name>
+	    <url-pattern>/page/coordCourseStudentDelete</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles evaluation page (includes evaluation add)</description>
+	    <servlet-name>CoordEval</servlet-name>
+	    <servlet-class>teammates.ui.controller.CoordEvalServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordEval</servlet-name>
+	    <url-pattern>/page/coordEval</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles evaluation edit page</description>
+	    <servlet-name>CoordEvalEdit</servlet-name>
+	    <servlet-class>teammates.ui.controller.CoordEvalEditServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordEvalEdit</servlet-name>
+	    <url-pattern>/page/coordEvalEdit</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles evaluation deletion</description>
+	    <servlet-name>CoordEvalDelete</servlet-name>
+	    <servlet-class>teammates.ui.controller.CoordEvalDeleteServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordEvalDelete</servlet-name>
+	    <url-pattern>/page/coordEvalDelete</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles evaluation publish action</description>
+	    <servlet-name>CoordEvalPublish</servlet-name>
+	    <servlet-class>teammates.ui.controller.CoordEvalPublishServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordEvalPublish</servlet-name>
+	    <url-pattern>/page/coordEvalPublish</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles evaluation unpublish action</description>
+	    <servlet-name>CoordEvalUnpublish</servlet-name>
+	    <servlet-class>teammates.ui.controller.CoordEvalUnpublishServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordEvalUnpublish</servlet-name>
+	    <url-pattern>/page/coordEvalUnpublish</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles evaluation remind action</description>
+	    <servlet-name>CoordEvalRemind</servlet-name>
+	    <servlet-class>teammates.ui.controller.CoordEvalRemindServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordEvalRemind</servlet-name>
+	    <url-pattern>/page/coordEvalRemind</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles evaluation submission edit page to edit student's submission</description>
+	    <servlet-name>CoordEvalSubmissionEdit</servlet-name>
+	    <servlet-class>teammates.ui.controller.CoordEvalSubmissionEditServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordEvalSubmissionEdit</servlet-name>
+	    <url-pattern>/page/coordEvalSubmissionEdit</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles coordinator edit student's submission page</description>
+	    <servlet-name>CoordEvalSubmissionEditHandler</servlet-name>
+	    <servlet-class>teammates.ui.controller.CoordEvalSubmissionEditHandlerServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordEvalSubmissionEditHandler</servlet-name>
+	    <url-pattern>/page/coordEvalSubmissionEditHandler</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles evaluation results page</description>
+	    <servlet-name>CoordEvalResults</servlet-name>
+	    <servlet-class>teammates.ui.controller.CoordEvalResultsServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordEvalResults</servlet-name>
+	    <url-pattern>/page/coordEvalResults</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles evaluation individual result page</description>
+	    <servlet-name>CoordEvalSubmissionView</servlet-name>
+	    <servlet-class>teammates.ui.controller.CoordEvalSubmissionViewServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>CoordEvalSubmissionView</servlet-name>
+	    <url-pattern>/page/coordEvalSubmissionView</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+	    <description>Servlet that handles student home page</description>
+	    <servlet-name>StudentHome</servlet-name>
+	    <servlet-class>teammates.ui.controller.StudentHomeServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>StudentHome</servlet-name>
+	    <url-pattern>/page/studentHome</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles student course details action</description>
+	    <servlet-name>StudentCourseDetails</servlet-name>
+	    <servlet-class>teammates.ui.controller.StudentCourseDetailsServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>StudentCourseDetails</servlet-name>
+	    <url-pattern>/page/studentCourseDetails</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles student join course action</description>
+	    <servlet-name>StudentCourseJoin</servlet-name>
+	    <servlet-class>teammates.ui.controller.StudentCourseJoinServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>StudentCourseJoin</servlet-name>
+	    <url-pattern>/page/studentCourseJoin</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles student edit/submit evaluation page</description>
+	    <servlet-name>StudentEvalEdit</servlet-name>
+	    <servlet-class>teammates.ui.controller.StudentEvalEditServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>StudentEvalEdit</servlet-name>
+	    <url-pattern>/page/studentEvalEdit</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles student edit/submit evaluation page</description>
+	    <servlet-name>StudentEvalEditHandler</servlet-name>
+	    <servlet-class>teammates.ui.controller.StudentEvalEditHandlerServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>StudentEvalEditHandler</servlet-name>
+	    <url-pattern>/page/studentEvalEditHandler</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	    <description>Servlet that handles student evaluation results page</description>
+	    <servlet-name>StudentEvalResults</servlet-name>
+	    <servlet-class>teammates.ui.controller.StudentEvalResultsServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>StudentEvalResults</servlet-name>
+	    <url-pattern>/page/studentEvalResults</url-pattern>
+	</servlet-mapping>
+	
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>AutomatedEmails</web-resource-name>
+            <url-pattern>/evaluationopeningreminders</url-pattern>
+            <url-pattern>/evaluationclosingreminders</url-pattern>
+        </web-resource-collection>
+         <web-resource-collection>
+            <web-resource-name>TaskQueue</web-resource-name>
+            <url-pattern>/searchTask</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>DisallowDirectAccess</web-resource-name>
+            <description>Pages that should not be accessed directly</description>
+            <url-pattern>/jsp/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>AdminPages</web-resource-name>
+            <description>Page for admin use only</description>
+            <url-pattern>/page/adminHome</url-pattern>
+            <url-pattern>/page/adminExceptionTest</url-pattern>
+            <url-pattern>/page/adminSearch</url-pattern>
+            <url-pattern>/page/adminActivityLog</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <error-page>
+        <error-code>403</error-code>
+        <location>/unauthorized.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/pageNotFound.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/errorPage.jsp</location>
+    </error-page>
+</web-app>

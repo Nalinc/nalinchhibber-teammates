@@ -1,0 +1,83 @@
+<%@ page import="teammates.common.Common" %>
+<%@ page import="teammates.common.datatransfer.EvaluationData" %>
+<%@ page import="teammates.common.datatransfer.StudentData" %>
+<%@ page import="teammates.common.datatransfer.SubmissionData" %>
+<%@ page import="teammates.ui.controller.StudentEvalEditHelper"%>
+<% StudentEvalEditHelper helper = (StudentEvalEditHelper)request.getAttribute("helper"); %>
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="shortcut icon" href="/favicon.png">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Teammates - Student</title>
+	<link rel="stylesheet" href="/stylesheets/common.css" type="text/css">
+	<link rel="stylesheet" href="/stylesheets/studentEvalEdit.css" type="text/css">
+
+	<script text="text/javasript" src="/js/jquery-1.6.2.min.js"></script>
+	<script text="text/javascript" src="/js/tooltip.js"></script>
+	<script text="text/javascript" src="/js/common.js"></script>
+	
+	<script text="text/javascript" src="/js/student.js"></script>	
+</head>
+
+<body>
+	<div id="dhtmltooltip"></div>
+
+	<div id="frameTop">
+		<jsp:include page="<%= Common.JSP_STUDENT_HEADER %>" />
+	</div>
+
+	<div id="frameBody">
+		<div id="frameBodyWrapper">
+			<div id="topOfPage"></div>
+			<div id="headerOperation">
+				<h1>Evaluation Submission</h1>
+			</div>
+			<div id="studentEvaluationInformation">
+				<table class="inputTable">
+					<tr>
+						<td class="label rightalign" width="30%">Course ID:</td>
+						<td id="<%= Common.PARAM_COURSE_ID %>"><%= helper.eval.course %></td>
+					</tr>
+					<tr>
+						<td class="label rightalign" width="30%">Evaluation name:</td>
+						<td id="<%= Common.PARAM_EVALUATION_NAME %>"><%=StudentEvalEditHelper.escapeForHTML(helper.eval.name)%></td>
+					</tr>
+					<tr>
+						<td class="label rightalign" width="30%">Opening time:</td>
+						<td id="<%=Common.PARAM_EVALUATION_STARTTIME%>"><%=Common.formatTime(helper.eval.startTime)%></td>
+					</tr>
+					<tr>
+						<td class="label rightalign" width="30%">Closing time:</td>
+						<td id="<%=Common.PARAM_EVALUATION_DEADLINETIME%>"><%=Common.formatTime(helper.eval.endTime)%></td>
+					</tr>
+					<tr>
+						<td class="label rightalign" width="30%">Instructions:</td>
+						<td id="<%=Common.PARAM_EVALUATION_INSTRUCTIONS%>"><%=StudentEvalEditHelper.escapeForHTML(helper.eval.instructions)%></td>
+					</tr>
+				</table>
+			</div>
+			<div id="studentEvaluationSubmissions">
+				<form name="form_submitevaluation" id="form_submitevaluation" method="post"
+						action="<%= Common.PAGE_STUDENT_EVAL_SUBMISSION_EDIT_HANDLER %>">
+					<jsp:include page="<%= Common.JSP_EVAL_SUBMISSION_EDIT %>" />
+					<jsp:include page="<%= Common.JSP_STATUS_MESSAGE %>" />
+					<div id="studentEvaluationSubmissionButtons">
+						<input type="submit" class="button" name="submitEvaluation"
+								onclick="return checkEvaluationForm(this.form)"
+								id="button_submit" value="Submit Evaluation">
+					</div>
+					<% if(helper.isMasqueradeMode()){ %>
+						<input type="hidden" name="<%= Common.PARAM_USER_ID %>" value="<%= helper.requestedUser %>">
+					<% } %>
+				</form>
+		 		<br><br>
+			</div>
+		</div>
+	</div>
+
+	<div id="frameBottom">
+		<jsp:include page="<%= Common.JSP_FOOTER %>" />
+	</div>
+</body>
+</html>
