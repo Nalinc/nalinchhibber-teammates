@@ -1,0 +1,101 @@
+package teammates.test.cases;
+
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
+import java.io.FileNotFoundException;
+
+import org.json.JSONException;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import teammates.common.Common;
+import teammates.common.datatransfer.InstructorData;
+import teammates.common.datatransfer.CourseData;
+import teammates.common.datatransfer.StudentData;
+import teammates.test.driver.BackDoor;
+import teammates.test.driver.BrowserInstance;
+import teammates.test.driver.BrowserInstancePool;
+import teammates.test.driver.TestProperties;
+
+public class LoginPageUiTest extends BaseTestCase {
+	
+	private static BrowserInstance bi;
+	
+	private static String appUrl = TestProperties.inst().TEAMMATES_URL;
+	
+	@BeforeClass
+	public static void classSetup() throws Exception {
+		printTestClassHeader();
+		
+		startRecordingTimeForDataImport();
+		
+		reportTimeForDataImport();
+		
+		bi = BrowserInstancePool.getBrowserInstance();
+		
+
+	}
+	
+	@AfterClass
+	public static void classTearDown() throws Exception {
+		BrowserInstancePool.release(bi);
+		printTestClassFooter();
+	}
+	
+	@Test
+	public void testInstructorLogin(){
+		//create a fresh instructor in datastore
+		InstructorData testInstructor = new InstructorData();
+		testInstructor.id = TestProperties.inst().TEST_INSTRUCTOR_ACCOUNT;
+		testInstructor.name = "Test Instructor";
+		testInstructor.email = "test@instructor";
+		BackDoor.deleteInstructor(testInstructor.id);
+		String backDoorOperationStatus = BackDoor.createInstructor(testInstructor);
+		assertEquals(Common.BACKEND_STATUS_SUCCESS, backDoorOperationStatus);
+		
+		//try to login
+		bi.logout();
+		bi.goToUrl(appUrl);
+		bi.click(bi.instructorLoginButton);
+		assertTrue(bi.isLocalLoginPage()||bi.isGoogleLoginPage());
+		String instructorPassword = TestProperties.inst().TEST_INSTRUCTOR_PASSWORD;
+		boolean isAdmin = false;
+		bi.login(testInstructor.id, instructorPassword, isAdmin);
+		assertContainsRegex(testInstructor.id+"{*}Instructor Home{*}", bi.getCurrentPageSource());
+	}
+	
+	@Test
+	public void testStudentLogin(){
+		//create a course for the new student
+		CourseData testCourse = new CourseData();
+		testCourse.id = "lput.tsl.course";
+		testCourse.name = "test.course.fornewstudent";
+		testCourse.instructor = "test.course.nonexistentinstructor";
+		BackDoor.deleteCourse(testCourse.id);
+		String backDoorOperationStatus = BackDoor.createCourse(testCourse);
+		assertEquals(Common.BACKEND_STATUS_SUCCESS, backDoorOperationStatus);
+		
+		//create a fresh student in datastore
+		StudentData testStudent = new StudentData();
+		testStudent.id = TestProperties.inst().TEST_STUDENT_ACCOUNT;
+		testStudent.name = "Test student";
+		testStudent.email = "test@student";
+		testStudent.course = testCourse.id;
+		BackDoor.deleteStudent(testStudent.course, testStudent.email);
+		backDoorOperationStatus = BackDoor.createStudent(testStudent);
+		assertEquals(Common.BACKEND_STATUS_SUCCESS, backDoorOperationStatus);
+		
+		//try to login
+		bi.logout();
+		bi.goToUrl(appUrl);
+		bi.click(bi.studentLoginButton);
+		assertTrue(bi.isLocalLoginPage()||bi.isGoogleLoginPage());
+		String studentPassword = TestProperties.inst().TEST_STUDENT_PASSWORD;
+		boolean isAdmin = false;
+		bi.login(testStudent.id, studentPassword, isAdmin);
+		assertContainsRegex(testStudent.id+"{*}Student Home{*}", bi.getCurrentPageSource());
+	}
+
+}
