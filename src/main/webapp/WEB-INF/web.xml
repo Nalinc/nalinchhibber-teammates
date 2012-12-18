@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
+	<filter>
+		<filter-name>DatastoreFilter</filter-name>
+		<filter-class>teammates.storage.datastore.DatastoreFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>DatastoreFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter>
+	    <description>Filter that do the login part for each JSP page</description>
+	    <filter-name>LoginFilter</filter-name>
+	    <filter-class>teammates.ui.controller.LoginFilter</filter-class>
+	    <init-param>
+	        <description>Files excluded from login check. "|"-separated</description>
+	        <param-name>ExcludedFiles</param-name>
+	        <param-value></param-value>
+	    </init-param>
+	</filter>
+	<filter-mapping>
+	    <filter-name>LoginFilter</filter-name>
+	    <url-pattern>/page/*</url-pattern>
+	</filter-mapping>
+	
+	<servlet>
+	    <servlet-name>Maintenance</servlet-name>
+	    <jsp-file>/maintenance.jsp</jsp-file>
+	</servlet>
+
+	<servlet-mapping>
+	    <servlet-name>Maintenance</servlet-name>
+	    <url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>LoginServlet</servlet-name>
+		<servlet-class>teammates.ui.controller.LoginServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>LoginServlet</servlet-name>
+		<url-pattern>/login</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>BackDoorServlet</servlet-name>
+		<servlet-class>teammates.logic.backdoor.BackDoorServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BackDoorServlet</servlet-name>
+		<url-pattern>/backdoor</url-pattern>
+	</servlet-mapping>
+	
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+	
+
+	
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>AutomatedEmails</web-resource-name>
+            <url-pattern>/evaluationopeningreminders</url-pattern>
+            <url-pattern>/evaluationclosingreminders</url-pattern>
+        </web-resource-collection>
+         <web-resource-collection>
+            <web-resource-name>TaskQueue</web-resource-name>
+            <url-pattern>/searchTask</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>DisallowDirectAccess</web-resource-name>
+            <description>Pages that should not be accessed directly</description>
+            <url-pattern>/jsp/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>AdminPages</web-resource-name>
+            <description>Page for admin use only</description>
+            <url-pattern>/page/adminHome</url-pattern>
+            <url-pattern>/page/adminExceptionTest</url-pattern>
+            <url-pattern>/page/adminSearch</url-pattern>
+            <url-pattern>/page/adminActivityLog</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <error-page>
+        <error-code>403</error-code>
+        <location>/unauthorized.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/pageNotFound.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/errorPage.jsp</location>
+    </error-page>
+     <error-page>
+        <error-code>500</error-code>
+        <location>/deadlineExceededErrorPage.jsp</location>
+    </error-page>
+</web-app>
