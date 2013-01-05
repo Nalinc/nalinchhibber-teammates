@@ -69,7 +69,7 @@
 		          <% 
 		          	if (log.getLogLevel().compareTo(LogLevel.WARN) == 0) {
 		           %>
-		            <td style="color:orange">
+		            <td style="color:blue">
 		          <% 
 		          	} else if (log.getLogLevel().compareTo(LogLevel.INFO) == 0){ 
 		          %>
