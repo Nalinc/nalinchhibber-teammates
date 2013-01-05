@@ -86,7 +86,9 @@ public abstract class ActionServlet<T extends Helper> extends HttpServlet {
 			MimeMessage email = helper.server.emailErrorReport(req.getServletPath(), reqParam, (Throwable) e);
 			try {
 				log.severe(email.getContent().toString());
-			} catch (Exception e1) {}
+			} catch (Exception e1) {
+				log.severe(e.getMessage());
+			}
 			
 			resp.sendRedirect(Common.JSP_DEADLINE_EXCEEDED_ERROR_PAGE);
 			return;
@@ -94,27 +96,16 @@ public abstract class ActionServlet<T extends Helper> extends HttpServlet {
 			MimeMessage email = helper.server.emailErrorReport(req.getServletPath(), reqParam, e);
 			try {
 				log.severe(email.getContent().toString());
-			} catch (Exception e1) {}
+			} catch (Exception e1) {
+				log.severe(e.getMessage());
+			}
 						
 		    resp.sendRedirect(Common.JSP_ERROR_PAGE);
 			return;
 		} finally {
 			//log activity
 			String logMsg = getUserActionLog(req, response, helper);
-			logUserAction(logLevel, logMsg);
-			
-		}
-	}
-	
-	protected void logUserAction(Level logLevel, String logMsg) {
-		if(logLevel.equals(Level.INFO)) {
-			log.info(logMsg);
-		}else if(logLevel.equals(Level.WARNING)) {
-			log.warning(logMsg);
-		}else if(logLevel.equals(Level.SEVERE)) {
-			log.severe(logMsg);
-		}else {
-			log.severe("Unknown Log Level" + logLevel.toString() + "|"+logMsg);
+			log.log(logLevel,logMsg);
 		}
 	}
 	
@@ -130,33 +121,24 @@ public abstract class ActionServlet<T extends Helper> extends HttpServlet {
 			action = actionTkn[actionTkn.length-1]; //retrieve last segment in path
 		}
 		sb.append(action+"|");
-
-		//log user information
+		
 		if(user.isInstructor) {
-			sb.append("Coordinator|");
-			AccountData u = helper.server.getAccount(user.id);
-			sb.append(u.name+"|");
-			sb.append(u.googleId+"|");
-			sb.append(u.email+"|");
+			sb.append("Instructor|");
 		}else if(user.isStudent) {
 			sb.append("Student|");
-			ArrayList<StudentData> students = helper.server.getStudentsWithId(helper.userId);
-			if(students.size() == 1) {
-				StudentData s = students.get(0);
-				sb.append(s.name+"|");
-				sb.append(s.id+"|");
-				sb.append(s.email+"|");
-			}else {
-				sb.append("Unknown User|");
-				sb.append( user.id +"|");
-				sb.append( user.id +"|");
-			}
-	       
 		}else {
 			sb.append("Unknown Role|");
-			sb.append("Unknown User|");
+		}
+		
+		AccountData account = helper.server.getAccount(user.id);
+		if(account!=null){
+			sb.append(account.name+"|");
+			sb.append(account.googleId+"|");
+			sb.append(account.email+"|");
+		}else{
+			sb.append("N/A|");
 			sb.append( user.id +"|");
-			sb.append( user.id +"|");
+			sb.append( "N/A" +"|");
 		}
 		
 		//log response
