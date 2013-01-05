@@ -1,9 +1,11 @@
 package teammates.ui.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.mail.internet.MimeMessage;
@@ -12,10 +14,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.apphosting.api.DeadlineExceededException;
-
-import teammates.common.BuildProperties;
 import teammates.common.Common;
+import teammates.common.datatransfer.AccountData;
 import teammates.common.datatransfer.CourseData;
 import teammates.common.datatransfer.EvaluationData;
 import teammates.common.datatransfer.StudentData;
@@ -25,8 +25,9 @@ import teammates.common.datatransfer.UserType;
 import teammates.common.exception.EntityDoesNotExistException;
 import teammates.common.exception.InvalidParametersException;
 import teammates.common.exception.UnauthorizedAccessException;
-import teammates.logic.Emails;
 import teammates.logic.api.Logic;
+
+import com.google.apphosting.api.DeadlineExceededException;
 
 @SuppressWarnings("serial")
 /**
@@ -62,30 +63,26 @@ public abstract class ActionServlet<T extends Helper> extends HttpServlet {
 		T helper = instantiateHelper();
 
 		prepareHelper(req, helper);
+
+		Level logLevel = null;
+		String response = null;
 		String reqParam = Common.printRequestParameters(req);
+
 		try {
 			doAction(req, helper);
-			
-			log.info("Request to: " + req.getServletPath() + "\n" +
-					"Request Params: " + reqParam + "\n" +
-					"Responded with: " + resp.SC_OK);
-			
+			logLevel = Level.INFO;
+			response = "OK";
+			doCreateResponse(req, resp, helper);
+
 		} catch (EntityDoesNotExistException e) {
-			log.warning("Request to: " + req.getServletPath() + "\n" +
-					"Request Params: " + reqParam + "\n" +
-					"Responded with: " + e.getMessage());
+			logLevel = Level.WARNING;
+			response = "EntityDoesNotExistException";
 			resp.sendRedirect(Common.JSP_ENTITY_NOT_FOUND_PAGE);
-			return;
 		} catch (UnauthorizedAccessException e) {
-			UserType user = new Logic().getLoggedInUser();
-			log.warning("Request to: " + req.getServletPath() + "\n" +
-					"Request Params: " + reqParam + "\n" +
-					"Responded with: Unauthorized access attempted by:"
-					+ (user == null ? "not-logged-user" : user.id)
-					+ Common.stackTraceToString(e));
+			logLevel = Level.WARNING;
+			response = "Unauthorized access";
 			resp.sendRedirect(Common.JSP_UNAUTHORIZED);
-			return;
-		} catch (DeadlineExceededException e) {
+		}  catch (DeadlineExceededException e) {
 			MimeMessage email = helper.server.emailErrorReport(req.getServletPath(), reqParam, (Throwable) e);
 			try {
 				log.severe(email.getContent().toString());
@@ -93,7 +90,7 @@ public abstract class ActionServlet<T extends Helper> extends HttpServlet {
 			
 			resp.sendRedirect(Common.JSP_DEADLINE_EXCEEDED_ERROR_PAGE);
 			return;
-		} catch (Throwable e) {
+		}  catch (Throwable e) {
 			MimeMessage email = helper.server.emailErrorReport(req.getServletPath(), reqParam, e);
 			try {
 				log.severe(email.getContent().toString());
@@ -101,9 +98,72 @@ public abstract class ActionServlet<T extends Helper> extends HttpServlet {
 						
 		    resp.sendRedirect(Common.JSP_ERROR_PAGE);
 			return;
+		} finally {
+			//log activity
+			String logMsg = getUserActionLog(req, response, helper);
+			logUserAction(logLevel, logMsg);
+			
 		}
+	}
+	
+	protected void logUserAction(Level logLevel, String logMsg) {
+		if(logLevel.equals(Level.INFO)) {
+			log.info(logMsg);
+		}else if(logLevel.equals(Level.WARNING)) {
+			log.warning(logMsg);
+		}else if(logLevel.equals(Level.SEVERE)) {
+			log.severe(logMsg);
+		}else {
+			log.severe("Unknown Log Level" + logLevel.toString() + "|"+logMsg);
+		}
+	}
+	
+	protected String getUserActionLog(HttpServletRequest req, String resp, T helper) {
+		UserType user = new Logic().getLoggedInUser();
 
-		doCreateResponse(req, resp, helper);
+		//Assumption.assertFalse("admin activity shouldn't be logged",helper.user.isAdmin);
+		StringBuilder sb = new StringBuilder("[TEAMMATES_LOG]|");
+		//log action
+		String[] actionTkn = req.getServletPath().split("/");
+		String action = req.getServletPath();
+		if(actionTkn.length > 0) {
+			action = actionTkn[actionTkn.length-1]; //retrieve last segment in path
+		}
+		sb.append(action+"|");
+
+		//log user information
+		if(user.isInstructor) {
+			sb.append("Coordinator|");
+			AccountData u = helper.server.getAccount(user.id);
+			sb.append(u.name+"|");
+			sb.append(u.googleId+"|");
+			sb.append(u.email+"|");
+		}else if(user.isStudent) {
+			sb.append("Student|");
+			ArrayList<StudentData> students = helper.server.getStudentsWithId(helper.userId);
+			if(students.size() == 1) {
+				StudentData s = students.get(0);
+				sb.append(s.name+"|");
+				sb.append(s.id+"|");
+				sb.append(s.email+"|");
+			}else {
+				sb.append("Unknown User|");
+				sb.append( user.id +"|");
+				sb.append( user.id +"|");
+			}
+	       
+		}else {
+			sb.append("Unknown Role|");
+			sb.append("Unknown User|");
+			sb.append( user.id +"|");
+			sb.append( user.id +"|");
+		}
+		
+		//log response
+		sb.append(resp+"|");
+		sb.append(Common.printRequestParameters(req));
+
+		return sb.toString();
 	}
 
 	/**
