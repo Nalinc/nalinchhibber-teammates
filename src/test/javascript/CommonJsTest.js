@@ -1,0 +1,132 @@
+
+module('common.js');
+
+test('isNumber(num)', function(){
+	equal(isNumber("-0.001"),true,"Negative double");
+	equal(isNumber("12.056"),true,"Positive double");
+	equal(isNumber("100356"),true,"Positive integer");
+	equal(isNumber("-237"),true,"Negative integer");
+	equal(isNumber("ABCDE"),false,"Letters");
+	equal(isNumber("$12.57"),false,"With Dollar Sign");
+	equal(isNumber("12A5"),false,"Letter in Numbers");
+	equal(isNumber("0"),true,"zero");
+	equal(isNumber("   124    "),true,"With Spacing");
+	equal(isNumber("   12   4    "),false,"With Spacing between");
+});
+
+test('isDate(date)', function(){
+	equal(isDate("12432567"),false,"Numbers");
+	equal(isDate("0/0/0"),false,"0/0/0 - not in proper format");
+	equal(isDate("12/2/13"),false,"12/2/13 - not in proper format");
+	equal(isDate("12/02/2013"),true,"12/02/2013 - proper format");
+	equal(isDate("12/12/13"),true,"12/02/13 - proper format");
+	equal(isDate("28-12-2013"),true,"28-12-2013 - proper format");
+	equal(isDate("01 03 2003"),true,"01 03 2003 - proper format");
+	equal(isDate("A1/B3/C003"),false,"A1/B3/C003 - not in proper format");
+	equal(isDate("Abcdef"),false,"Letters");
+	equal(isDate("    12/12/01"),true,"With Spacing in front");
+	equal(isDate("12 12 01       "),true,"With Spacing behind");
+	equal(isDate("            12-12-01       "),true,"With Spacing");
+	equal(isDate("a12-12-2001"),false,"a12-12-2001 - not in proper format");
+	equal(isDate("    a      12 12 2001"),false,"    a      12 12 2001 - not in proper format");
+	equal(isDate("12/12/2001   a  "),false,"12/12/2001   a  - not in proper format");
+});
+
+
+test('scrollToTop()', function(){
+	// N/A, trivial function
+	expect(0);
+});
+
+
+test('sortBase(x, y)', function(){
+	equal(sortBase("abc","abc"),0,"Same text");
+	equal(sortBase("ABC","abc"),-1,"Bigger text");
+	equal(sortBase("abc","ABC"),1,"Smaller text");
+	equal(sortBase("abc","efg"),-1,"Different text");
+	equal(sortBase("ABC","efg"),-1,"Bigger text");
+	equal(sortBase("abc","EFG"),1,"Smaller text");
+});
+
+test('sortNum(x, y)', function(){
+	equal(sortNum("1","2"),-1,"x=1, y=2");
+	equal(sortNum("-10","2"),-12,"x=-10, y=2");
+	equal(sortNum("3","-1"),4,"x=3, y=-1");
+	equal(sortNum("0.1","0.1"),0,"x=0.1, y=0.1");
+	equal(sortNum("-0.1","0.1"),-0.2,"x=-0.1, y=0.1");
+	equal(sortNum("0.1","-0.1"),0.2,"x=-0.1, y=-0.1");
+});
+
+test('sortDate(x, y)', function(){
+	equal(sortDate("25/04/1999","23/04/1999"),2,"25/04/1999 - 23/04/1999");
+	equal(sortDate("25 04 1999","25 07 1999"),-300,"25 04 1999 - 25 07 1999");
+	equal(sortDate("25-04-1980","25-04-1999"),-190000,"25-04-1980 - 25-04-1999");
+	equal(sortDate("25/04/1980","25-04-1999"),-190000,"25/04/1980 - 25-04-1999");
+	equal(sortDate("25 04 1980","25-04-1999"),-190000,"25 04 1980 - 25-04-1999");
+	equal(sortDate("25 04 1980","25/04/1999"),-190000,"25 04 1980 - 25/04/1999");
+});
+
+test('setStatusMessage(message,error)', function(){	
+	$("body").append('<div id="statusMessage"></div>');
+	var message = "Status Message";
+	
+	//('background-color') == "rgba(0, 0, 0, 0)" is for chrome browser
+	//('background-color') == "transparent" is for firefox browser
+	
+	setStatusMessage(message, false);
+	equal($("#statusMessage").html(), message, "Normal status message");
+	ok(($("#statusMessage").css('background-color') == "rgba(0, 0, 0, 0)" || $("#statusMessage").css('background-color') == "transparent"), "No background");
+	setStatusMessage("", false);
+	equal($("#statusMessage").html(), "", "Empty status message");
+	ok(($("#statusMessage").css('background-color') == "rgba(0, 0, 0, 0)" || $("#statusMessage").css('background-color') == "transparent"), "No background");
+	setStatusMessage(message, true);
+	equal($("#statusMessage").html(), message, "Normal status message");
+	equal($("#statusMessage").css('background-color'), "rgb(255, 153, 153)", "Red background");
+	setStatusMessage("", true);
+	equal($("#statusMessage").html(), "", "Normal status message");
+	ok(($("#statusMessage").css('background-color') == "rgba(0, 0, 0, 0)" || $("#statusMessage").css('background-color') == "transparent"), "No background");
+	
+});
+
+
+test('clearStatusMessage()', function(){
+	clearStatusMessage();
+	equal($("#statusMessage").html(), "", "Status message cleared");
+	ok(($("#statusMessage").css('background-color') == "rgba(0, 0, 0, 0)" || $("#statusMessage").css('background-color') == "transparent"), "No background");
+});
+
+
+test('checkEvaluationForm()', function(){
+	// N/A, requires elements in the page
+	expect(0);
+});
+
+test('isEmailValid(email)', function(){
+	equal(isEmailValid("test@gmail.com"), true, "test@gmail.com - valid");
+	
+	equal(isEmailValid("email"), false, "email - invalid");
+	equal(isEmailValid("email@email"), false, "email@email - invalid");
+	equal(isEmailValid("@yahoo.com"), false, "@yahoo.com - invalid");
+	equal(isEmailValid("email.com"), false, "email.com - invalid");
+});
+	
+
+test('isNameValid(name)', function(){
+	equal(isNameValid('	Tom Jacobs,.	\'()-\/ \\  '), true, "alphanumerics, fullstop, comma, round brackets, slashes, apostrophe, hyphen - valid");
+	equal(isNameValid(generateRandomString(NAME_MAX_LENGTH)), true, "Maximum characters - valid");
+	
+	equal(isNameValid(""), false, "Empty name - invalid");
+	equal(isNameValid(generateRandomString(NAME_MAX_LENGTH + 1)), false, "Exceed number of maximum characters - invalid");
+	equal(isNameValid("Tom! Jacobs"), false, "! character - invalid");
+	equal(isNameValid("Tom ^Jacobs"), false, "^ character - invalid");
+	equal(isNameValid("Tom#"), false, "# character - invalid");
+	equal(isNameValid("&Tom"), false, "& character - invalid");
+	equal(isNameValid("J%cobs "), false, "% character - invalid");
+	equal(isNameValid("Jacobs*"), false, "* character - invalid");
+	equal(isNameValid("	+123	 "), false, "+ character - invalid");
+	equal(isNameValid("a b c $ 1 2 3 4"), false, "$ character - invalid");
+	equal(isNameValid("1@2@3  456"), false, "@ character - invalid");
+	equal(isNameValid("Tom = Tom"), false, "= character - invalid");
+	equal(isNameValid("Tom||Jacobs"), false, "| character - invalid");
+	
+});
