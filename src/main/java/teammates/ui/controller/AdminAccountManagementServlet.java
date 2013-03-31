@@ -50,7 +50,7 @@ public class AdminAccountManagementServlet extends ActionServlet<AdminAccountMan
 		ArrayList<Object> data = new ArrayList<Object>();
 		data.add(helper.instructorAccountsTable.size());
 		activityLogEntry = instantiateActivityLogEntry(Common.ADMIN_ACCOUNT_MANAGEMENT_SERVLET, Common.ADMIN_ACCOUNT_MANAGEMENT_SERVLET_PAGE_LOAD,
-				true, helper, url, data);
+				false, helper, url, data);
 	}
 
 	@Override
