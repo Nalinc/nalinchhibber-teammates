@@ -567,6 +567,22 @@ public class AccountsDb {
 	}
 	
 	/**
+	 * Called when an instructor is deleted
+	 * 
+	 * This method can be called if the Account does not exist (in test cases)
+	 * 
+	 * @param googleId
+	 */
+	public void makeAccountNonInstructor(String googleId) {
+		Assumption.assertNotNull(Common.ERROR_DBLEVEL_NULL_INPUT, googleId);
+		Account a = getAccountEntity(googleId);
+		if (a != null) {
+			a.setIsInstructor(false);
+			getPM().close();
+		}
+	}
+	
+	/**
 	 * To be use for a user to update his/her information.
 	 * 
 	 * @param AccountData a
@@ -1023,3 +1039,4 @@ public class AccountsDb {
 	}
 
 }
+

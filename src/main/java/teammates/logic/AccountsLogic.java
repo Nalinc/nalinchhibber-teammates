@@ -55,5 +55,10 @@ public class AccountsLogic {
 	public List<AccountData> getInstructorAccounts() {
 		return accountsDb.getInstructorAccounts();
 	}
+
+	//==========================================================================
+	public void makeAccountNonInstructor(String instructorId) {
+		accountsDb.makeAccountNonInstructor(instructorId);
+	}
 		
 }

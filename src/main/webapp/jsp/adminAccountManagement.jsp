@@ -35,6 +35,9 @@
             <div id="topOfPage"></div>
             <div id="headerOperation">
             <h1>Instructor Account Management</h1>
+            <br>
+            <jsp:include page="<%= Common.JSP_STATUS_MESSAGE %>" />
+            <br>
             </div>
             <p id="instructorCount" class="rightalign bold">Total Instructors: <%=helper.instructorCoursesTable.size()%></p>
             <table class="dataTable">
@@ -64,8 +67,9 @@
                      %>
                      </td>
                      <td>
-                        <a href="<%=helper.getAccountDetailsLink(acc.googleId) %>">View Details</a>&nbsp;&nbsp;
-                        Delete Account
+                        <a id="<%=acc.googleId + "_details"%>" href="<%=helper.getAccountDetailsLink(acc.googleId) %>">View Details</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a id="<%=acc.googleId + "_delete"%>" href="<%=helper.getInstructorDeleteLink(acc.googleId) %>">Delete Instructor Status</a><br>
+                        <a id="<%=acc.googleId + "_deleteAccount"%>" href="<%=helper.getAccountDeleteLink(acc.googleId) %>" onclick="return toggleDeleteAccountConfirmation()">Delete Entire Account</a>
                      </td>
                 </tr>
             <%
@@ -73,7 +77,6 @@
             %>
             </table>
             <br>
-            <jsp:include page="<%= Common.JSP_STATUS_MESSAGE %>" />
             <br>
             <br>
         </div>
