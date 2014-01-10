@@ -242,7 +242,7 @@ public class FieldValidator {
 	public static final String TEAM_NAME_ERROR_MESSAGE = 
 			"\"%s\" is not acceptable to TEAMMATES as "+TEAM_NAME_FIELD_NAME+" because it %s. " +
 					"The value of "+TEAM_NAME_FIELD_NAME+" should be no longer than "+
-					TEAM_NAME_MAX_LENGTH+" characters.";
+					TEAM_NAME_MAX_LENGTH+" characters. It should not be empty.";
 	
 
 	// ////////////////////////////////////////////////////////////////////////
@@ -264,6 +264,8 @@ public class FieldValidator {
 	
 	//Allows English alphabet, numbers, underscore,  dot, dollar sign and hyphen.
 	private static final String REGEX_COURSE_ID = "[a-zA-Z0-9_.$-]+";
+
+	public static final String REGEX_SAMPLE_COURSE_ID = REGEX_COURSE_ID + "-demo\\d*";
 	
 	//Allows anything with some non-empty text followed by '@' followed by another non-empty text
 	// We have made this less restrictive because there is no accepted regex to check the validity of email addresses.
@@ -356,7 +358,7 @@ public class FieldValidator {
 					STUDENT_ROLE_COMMENTS_FIELD_NAME, STUDENT_ROLE_COMMENTS_MAX_LENGTH, (String)value);
 			break;
 		case TEAM_NAME:
-			returnValue = getValidityInfoForSizeCappedPossiblyEmptyString(
+			returnValue = getValidityInfoForSizeCappedNonEmptyString(
 			TEAM_NAME_FIELD_NAME, TEAM_NAME_MAX_LENGTH, (String)value);
 			break;
 		case GOOGLE_ID:
